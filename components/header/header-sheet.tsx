@@ -3,6 +3,8 @@
 import type { User } from "@supabase/supabase-js";
 import { APP_NAME } from "@/lib/constants";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/contexts/login-context";
 import { useSheet } from "@/contexts/sheet-context";
@@ -21,7 +23,14 @@ export default function HeaderSheet({ user }: HeaderSheetProps) {
   const { openLogin } = useLogin();
   const { setIsOpen } = useSheet();
 
-  const handleSignOut = async () => {};
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setIsOpen(false);
+    toast.success("로그아웃 되었습니다.");
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <SheetHeader className="border-b border-brand/10">

@@ -3,11 +3,25 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function GoogleLoginButton() {
   const [loading, setLoading] = useState(false);
 
-  const loginWithGoogle = async () => {};
+  const loginWithGoogle = async () => {
+    setLoading(true);
+    const supabase = createClient();
+
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          prompt: "select_account", // 계정 선택 화면 표시
+        },
+      },
+    });
+  };
 
   return (
     <Button

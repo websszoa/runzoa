@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SheetProvider } from "@/contexts/sheet-context";
@@ -12,6 +13,8 @@ import {
   APP_SITE_URL,
   APP_SLOGAN,
 } from "@/lib/constants";
+
+import AuthToast from "@/components/auth/auth-toast";
 
 const anyvid = localFont({
   variable: "--font-anyvid",
@@ -137,6 +140,9 @@ export default function RootLayout({
                 },
               }}
             />
+            <Suspense fallback={null}>
+              <AuthToast />
+            </Suspense>
             <TooltipProvider>{children}</TooltipProvider>
           </SheetProvider>
         </LoginProvider>
