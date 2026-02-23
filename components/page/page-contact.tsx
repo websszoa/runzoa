@@ -70,7 +70,7 @@ export default function PageContact() {
       if (error) throw error;
 
       toast.success("문의가 성공적으로 접수되었습니다.");
-      form.reset();
+      form.reset({ message: "", user_email: userEmail });
       setIsSubmitted(true);
       setShowForm(false);
     } catch (error) {

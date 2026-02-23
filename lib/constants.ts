@@ -1,6 +1,6 @@
 export const APP_NAME = "런조아";
 export const APP_ENG_NAME = "Runzoa";
-export const APP_SLOGAN = "마라톤 여정을 위한 완벽한 가이드1";
+export const APP_SLOGAN = "마라톤 여정을 위한 완벽한 가이드";
 export const APP_COPYRIGHT = "© 2026 webstoryboy. All rights reserved.";
 
 export const APP_SITE_URL = "https://runzoa.com";

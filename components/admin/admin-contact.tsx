@@ -7,6 +7,7 @@ import { Eye, LucideMessageSquareCode } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Contact } from "@/lib/types";
+import DialogContactEdit from "@/components/dialog/dialog-contact-edit";
 import {
   Table,
   TableBody,
@@ -29,6 +30,14 @@ export default function AdminContact({ contacts }: { contacts: Contact[] }) {
     const closed = contactRows.filter((c) => c.status === "closed").length;
     return { pending, progress, resolved, closed };
   }, [contactRows]);
+
+  const handleUpdated = (updated: Contact) => {
+    setContactRows((prev) =>
+      prev.map((row) => (row.id === updated.id ? updated : row)),
+    );
+    setSelectedContact(updated);
+  };
+
   return (
     <div className="md:p-6 md:space-y-6 p-4 space-y-4">
       {/* Header */}
@@ -156,6 +165,13 @@ export default function AdminContact({ contacts }: { contacts: Contact[] }) {
           </TableBody>
         </Table>
       </div>
+
+      <DialogContactEdit
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        contact={selectedContact}
+        onUpdated={handleUpdated}
+      />
     </div>
   );
 }

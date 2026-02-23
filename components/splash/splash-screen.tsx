@@ -5,7 +5,7 @@ import Image from "next/image";
 import { APP_ENG_NAME } from "@/lib/constants";
 
 export default function SplashScreen() {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {

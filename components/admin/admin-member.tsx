@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/utils";
 import { MessageSquareCode, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import DialogMemberEdit from "@/components/dialog/dialog-member-edit";
 import {
   Table,
   TableBody,
@@ -29,6 +30,13 @@ export default function AdminMember({ members }: { members: Profile[] }) {
     const admins = memberRows?.filter((m) => m.role === "admin").length || 0;
     return { total, active, deleted, admins };
   }, [memberRows]);
+
+  const handleUpdated = (updated: Profile) => {
+    setMemberRows((prev) =>
+      prev.map((member) => (member.id === updated.id ? updated : member)),
+    );
+    setSelectedMember(updated);
+  };
 
   return (
     <div className="md:p-6 md:space-y-6 p-4 space-y-4">
@@ -160,6 +168,13 @@ export default function AdminMember({ members }: { members: Profile[] }) {
           </TableBody>
         </Table>
       </div>
+
+      <DialogMemberEdit
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        member={selectedMember}
+        onUpdated={handleUpdated}
+      />
     </div>
   );
 }

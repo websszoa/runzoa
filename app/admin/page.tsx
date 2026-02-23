@@ -2,8 +2,39 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Cable, Gamepad2, Helicopter } from "lucide-react";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export default async function AdminDashboardPage() {
+  const [
+    { count: totalMembers },
+    { count: activeMembers },
+    { count: totalContacts },
+    { count: pendingContacts },
+    { count: totalMarathons },
+    { data: regionRows },
+  ] = await Promise.all([
+    supabaseAdmin
+      .from("profiles")
+      .select("*", { count: "exact", head: true }),
+    supabaseAdmin
+      .from("profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("is_deleted", false),
+    supabaseAdmin
+      .from("contacts")
+      .select("*", { count: "exact", head: true }),
+    supabaseAdmin
+      .from("contacts")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pending"),
+    supabaseAdmin
+      .from("marathons")
+      .select("*", { count: "exact", head: true }),
+    supabaseAdmin.from("marathons").select("region"),
+  ]);
+
+  const distinctRegions = new Set(regionRows?.map((r) => r.region)).size;
+
   return (
     <div className="md:p-6 md:space-y-6 p-4 space-y-4">
       {/* Header */}
@@ -31,14 +62,18 @@ export default async function AdminDashboardPage() {
           <CardContent className="space-y-3">
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-semibold font-paperlogy text-brand">
-                0
+                {totalMembers ?? 0}
               </span>
               <span className="text-sm text-muted-foreground font-anyvid">
                 전체
               </span>
             </div>
             <div className="text-sm text-muted-foreground font-anyvid">
-              활성 회원 <span className="font-medium text-foreground">0</span>명
+              활성 회원{" "}
+              <span className="font-medium text-foreground">
+                {activeMembers ?? 0}
+              </span>
+              명
             </div>
             <Button
               variant="outline"
@@ -64,14 +99,18 @@ export default async function AdminDashboardPage() {
           <CardContent className="space-y-3">
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-semibold font-paperlogy text-brand">
-                0
+                {totalContacts ?? 0}
               </span>
               <span className="text-sm text-muted-foreground font-anyvid">
                 전체
               </span>
             </div>
             <div className="text-sm text-muted-foreground font-anyvid">
-              대기 중 <span className="font-medium text-yellow-600">0</span>건
+              대기 중{" "}
+              <span className="font-medium text-yellow-600">
+                {pendingContacts ?? 0}
+              </span>
+              건
             </div>
             <Button
               variant="outline"
@@ -97,14 +136,18 @@ export default async function AdminDashboardPage() {
           <CardContent className="space-y-3">
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-semibold font-paperlogy text-brand">
-                0
+                {totalMarathons ?? 0}
               </span>
               <span className="text-sm text-muted-foreground font-anyvid">
                 전체
               </span>
             </div>
             <div className="text-sm text-muted-foreground font-anyvid">
-              지역 수 <span className="font-medium text-foreground">0</span>곳
+              지역 수{" "}
+              <span className="font-medium text-foreground">
+                {distinctRegions}
+              </span>
+              곳
             </div>
             <Button
               variant="outline"
