@@ -3,6 +3,8 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SheetProvider } from "@/contexts/sheet-context";
+import { LoginProvider } from "@/contexts/login-context";
 import {
   APP_DESCRIPTION,
   APP_KEYWORDS,
@@ -124,16 +126,20 @@ export default function RootLayout({
       <body
         className={`${anyvid.variable} ${nanumSquare.variable} ${paperlogy.variable}`}
       >
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            classNames: {
-              title: "font-anyvid",
-              description: "font-anyvid",
-            },
-          }}
-        />
-        <TooltipProvider>{children}</TooltipProvider>
+        <LoginProvider>
+          <SheetProvider>
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                classNames: {
+                  title: "font-anyvid",
+                  description: "font-anyvid",
+                },
+              }}
+            />
+            <TooltipProvider>{children}</TooltipProvider>
+          </SheetProvider>
+        </LoginProvider>
       </body>
     </html>
   );
