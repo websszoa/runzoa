@@ -15,6 +15,7 @@ import {
 } from "@/lib/constants";
 
 import AuthToast from "@/components/auth/auth-toast";
+import SplashScreen from "@/components/splash/splash-screen";
 
 const anyvid = localFont({
   variable: "--font-anyvid",
@@ -143,7 +144,10 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <AuthToast />
             </Suspense>
-            <TooltipProvider>{children}</TooltipProvider>
+            <TooltipProvider>
+              <SplashScreen />
+              {children}
+            </TooltipProvider>
           </SheetProvider>
         </LoginProvider>
       </body>

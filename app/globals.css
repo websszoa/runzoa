@@ -140,7 +140,7 @@
     @apply max-w-5xl mx-auto px-4 md:px-6 min-h-[calc(100vh-400px)];
   }
   .footer__container {
-    @apply max-w-5xl mx-auto px-4 md:px-6 py-4 mt-6;
+    @apply max-w-5xl mx-auto px-4 md:px-6 py-4 mt-6 pb-18 md:pb-2;
   }
   .contact__container {
     @apply max-w-[500px] mx-auto border border-gray-200 p-4 md:p-6 rounded-2xl;
