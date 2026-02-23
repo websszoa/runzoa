@@ -11,26 +11,23 @@ export default function SplashScreen() {
   useEffect(() => {
     const hasVisited = sessionStorage.getItem("splash_shown");
 
-    if (hasVisited) {
-      // 재방문: 즉시 숨김
-      setIsVisible(false);
-      return;
+    if (!hasVisited) {
+      setIsVisible(true);
+
+      const fadeTimer = setTimeout(() => {
+        setIsFading(true);
+      }, 1500);
+
+      const hideTimer = setTimeout(() => {
+        setIsVisible(false);
+        sessionStorage.setItem("splash_shown", "true");
+      }, 2000);
+
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(hideTimer);
+      };
     }
-
-    // 첫 방문: 스플래시 표시
-    const fadeTimer = setTimeout(() => {
-      setIsFading(true);
-    }, 1500);
-
-    const hideTimer = setTimeout(() => {
-      setIsVisible(false);
-      sessionStorage.setItem("splash_shown", "true");
-    }, 2000);
-
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(hideTimer);
-    };
   }, []);
 
   if (!isVisible) return null;
