@@ -15,6 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import DialogMarathonEdit from "@/components/dialog/dialog-marathon-edit";
+
 type AdminMarathonTableProps = {
   marathons: Marathon[];
   onMarathonUpdated: (updatedMarathon: Marathon) => void;
@@ -86,8 +88,10 @@ export default function AdminMarathonTable({
                     <Badge variant="outline">추가접수</Badge>
                   )}
                 </TableCell>
-                <TableCell>{formatDate(marathon.event_start_at)}</TableCell>
-                <TableCell>
+                <TableCell className="text-muted-foreground">
+                  {formatDate(marathon.event_start_at)}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
                   {formatDate(marathon.registration_start_at)}
                 </TableCell>
                 <TableCell className="flex items-center justify-center gap-2">
@@ -108,6 +112,14 @@ export default function AdminMarathonTable({
           )}
         </TableBody>
       </Table>
+
+      <DialogMarathonEdit
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        marathon={selectedMarathon}
+        onUpdated={onMarathonUpdated}
+        onDeleted={onMarathonDeleted}
+      />
     </div>
   );
 }

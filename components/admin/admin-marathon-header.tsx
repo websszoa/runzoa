@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import { Marathon } from "@/lib/types";
 
+import DialogMarathonAdd from "@/components/dialog/dialog-marathon-add";
+
 type AdminMarathonHeaderProps = {
   onMarathonAdded: (addedMarathon: Marathon) => void;
 };
@@ -34,6 +36,12 @@ export default function AdminMarathonHeader({
           마라톤 추가
         </Button>
       </div>
+
+      <DialogMarathonAdd
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        onMarathonAdded={onMarathonAdded}
+      />
     </>
   );
 }
