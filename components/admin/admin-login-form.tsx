@@ -87,22 +87,18 @@ export function AdminLoginForm({ onSuccess }: AdminLoginFormProps) {
                         <InputOTPGroup>
                           <InputOTPSlot
                             index={0}
-                            masked
                             className="h-12 w-12 text-lg font-semibold"
                           />
                           <InputOTPSlot
                             index={1}
-                            masked
                             className="h-12 w-12 text-lg font-semibold"
                           />
                           <InputOTPSlot
                             index={2}
-                            masked
                             className="h-12 w-12 text-lg font-semibold"
                           />
                           <InputOTPSlot
                             index={3}
-                            masked
                             className="h-12 w-12 text-lg font-semibold"
                           />
                         </InputOTPGroup>
