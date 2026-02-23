@@ -8,7 +8,7 @@ export default function MarathonTitle() {
   return (
     <div className="marathon__title">
       <div className="text-center border-t border-gray-300/40 py-8">
-        <span className="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
+        <span className="text-sm font-semibold uppercase tracking-[0.35em] text-red-600">
           {APP_ENG_NAME}
         </span>
         <h2 className="py-1 md:py-2 text-2xl md:text-3xl text-slate-900 font-anyvid">

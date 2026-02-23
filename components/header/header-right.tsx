@@ -26,8 +26,10 @@ export default function HeaderRight({ user }: HeaderRightProps) {
             variant="ghost"
             size="icon"
             className="h-11 w-11 rounded-full hover:border bg-brand text-white hover:bg-white hover:text-brand overflow-hidden p-0"
+            aria-label={isOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={isOpen}
           >
-            <Medal className="w-5 h-5" />
+            <Medal className="w-5 h-5" aria-hidden />
           </Button>
         </SheetTrigger>
         <SheetContent>

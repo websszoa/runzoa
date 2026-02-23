@@ -5,29 +5,32 @@ import Image from "next/image";
 import { APP_ENG_NAME } from "@/lib/constants";
 
 export default function SplashScreen() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     const hasVisited = sessionStorage.getItem("splash_shown");
 
-    if (!hasVisited) {
-      setIsVisible(true);
-
-      const fadeTimer = setTimeout(() => {
-        setIsFading(true);
-      }, 1500);
-
-      const hideTimer = setTimeout(() => {
-        setIsVisible(false);
-        sessionStorage.setItem("splash_shown", "true");
-      }, 2000);
-
-      return () => {
-        clearTimeout(fadeTimer);
-        clearTimeout(hideTimer);
-      };
+    if (hasVisited) {
+      // 재방문: 즉시 숨김
+      setIsVisible(false);
+      return;
     }
+
+    // 첫 방문: 스플래시 표시
+    const fadeTimer = setTimeout(() => {
+      setIsFading(true);
+    }, 1500);
+
+    const hideTimer = setTimeout(() => {
+      setIsVisible(false);
+      sessionStorage.setItem("splash_shown", "true");
+    }, 2000);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(hideTimer);
+    };
   }, []);
 
   if (!isVisible) return null;
