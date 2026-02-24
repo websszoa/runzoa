@@ -52,8 +52,8 @@ export async function generateMetadata({
 
   // 대표 이미지
   const ogImage = data.images?.cover?.[0]
-    ? `${MARATHON_IMAGE_BASE_URL}/${data.images.cover[0]}`
-    : `${MARATHON_IMAGE_BASE_URL}/no-image.jpg`;
+    ? `${MARATHON_IMAGE_BASE_URL}/cover/${data.images.cover[0]}`
+    : `${APP_SITE_URL}/runzoa.webp`;
 
   return {
     title: `${data.name} | ${APP_NAME}`,

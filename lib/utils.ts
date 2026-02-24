@@ -95,9 +95,9 @@ export function getRegistrationStartDday(
   const start = typeof registrationStartAt === "string" ? new Date(registrationStartAt) : registrationStartAt;
   if (isNaN(start.getTime())) return null;
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  const diffMs = startDate.getTime() - today.getTime();
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const startDate = Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate());
+  const diffMs = startDate - today;
   return Math.round(diffMs / (24 * 60 * 60 * 1000));
 }
 
