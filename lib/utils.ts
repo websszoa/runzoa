@@ -84,6 +84,37 @@ export function formatTimeToKorean(
   return `오후 ${pad(hours - 12)}:${pad(minutes)}`;
 }
 
+/**
+ * 접수 시작일(registration_start_at) 기준 오늘부터 며칠 남았는지 D-day 계산.
+ * @returns 오늘보다 미래면 양수(남은 일수), 오늘이면 0, 과거면 음수. 날짜 없으면 null
+ */
+export function getRegistrationStartDday(
+  registrationStartAt: string | Date | null | undefined,
+): number | null {
+  if (!registrationStartAt) return null;
+  const start = typeof registrationStartAt === "string" ? new Date(registrationStartAt) : registrationStartAt;
+  if (isNaN(start.getTime())) return null;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const diffMs = startDate.getTime() - today.getTime();
+  return Math.round(diffMs / (24 * 60 * 60 * 1000));
+}
+
+/**
+ * 접수 대기 상태일 때 "접수까지 N일 남았습니다" 등 D-day 문구 반환
+ */
+export function formatRegistrationDday(
+  registrationStartAt: string | Date | null | undefined,
+): string {
+  const dday = getRegistrationStartDday(registrationStartAt);
+  if (dday === null) return "접수 예정";
+  if (dday > 1) return `접수까지 ${dday}일 남았습니다!!`;
+  if (dday === 1) return "접수가 내일 시작합니다!!";
+  if (dday === 0) return "접수가 오늘 시작합니다!!";
+  return "접수 예정";
+}
+
 /** 날짜(문자열 또는 Date)를 "M월 d일" + "(요일)" 형태로 분리해서 반환 */
 export function formatMonthDayAndWeekday(
   date: string | Date | null | undefined,
@@ -107,18 +138,35 @@ function normalizeDistanceLabel(distance: string): string {
   return upper;
 }
 
-type MarathonRegistrationPrice = {
-  distance: string;
-  price: number | null;
-}[];
+type MarathonRegistrationPriceItem = { distance: string; price: number | null };
+type MarathonRegistrationPrice =
+  | MarathonRegistrationPriceItem[]
+  | Record<string, number>
+  | null
+  | undefined;
+
+function toRegistrationPriceArray(
+  registrationPrice: MarathonRegistrationPrice,
+): MarathonRegistrationPriceItem[] {
+  if (!registrationPrice) return [];
+  if (Array.isArray(registrationPrice)) return registrationPrice;
+  if (typeof registrationPrice === "object" && registrationPrice !== null) {
+    return Object.entries(registrationPrice).map(([distance, price]) => ({
+      distance,
+      price: typeof price === "number" ? price : null,
+    }));
+  }
+  return [];
+}
 
 /** registration_price에서 거리 목록을 "10KM / 풀코스 / 하프" 형식으로 반환 */
 export function formatRegistrationDistances(
-  registrationPrice: MarathonRegistrationPrice | null | undefined,
+  registrationPrice: MarathonRegistrationPrice,
 ): string {
-  if (!registrationPrice || registrationPrice.length === 0) return "-";
+  const arr = toRegistrationPriceArray(registrationPrice);
+  if (arr.length === 0) return "-";
 
-  const distances = registrationPrice
+  const distances = arr
     .map((item) => item.distance)
     .filter(Boolean)
     .map(normalizeDistanceLabel);
@@ -133,11 +181,12 @@ function formatPriceWithDot(value: number): string {
 
 /** registration_price에서 가격 범위를 "30.000원 ~ 50.000원" 형식으로 반환 */
 export function formatRegistrationPriceRange(
-  registrationPrice: MarathonRegistrationPrice | null | undefined,
+  registrationPrice: MarathonRegistrationPrice,
 ): string {
-  if (!registrationPrice || registrationPrice.length === 0) return "-";
+  const arr = toRegistrationPriceArray(registrationPrice);
+  if (arr.length === 0) return "-";
 
-  const prices = registrationPrice
+  const prices = arr
     .map((item) => item.price)
     .filter((price): price is number => typeof price === "number")
     .sort((a, b) => a - b);

@@ -11,7 +11,7 @@ export default async function AdminDashboardPage() {
     { count: totalContacts },
     { count: pendingContacts },
     { count: totalMarathons },
-    { data: regionRows },
+    { count: openMarathons },
   ] = await Promise.all([
     supabaseAdmin
       .from("profiles")
@@ -30,10 +30,11 @@ export default async function AdminDashboardPage() {
     supabaseAdmin
       .from("marathons")
       .select("*", { count: "exact", head: true }),
-    supabaseAdmin.from("marathons").select("region"),
+    supabaseAdmin
+      .from("marathons")
+      .select("*", { count: "exact", head: true })
+      .eq("registration_status", "접수중"),
   ]);
-
-  const distinctRegions = new Set(regionRows?.map((r) => r.region)).size;
 
   return (
     <div className="md:p-6 md:space-y-6 p-4 space-y-4">
@@ -143,11 +144,11 @@ export default async function AdminDashboardPage() {
               </span>
             </div>
             <div className="text-sm text-muted-foreground font-anyvid">
-              지역 수{" "}
+              접수 중{" "}
               <span className="font-medium text-foreground">
-                {distinctRegions}
+                {openMarathons ?? 0}
               </span>
-              곳
+              건
             </div>
             <Button
               variant="outline"

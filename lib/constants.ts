@@ -9,7 +9,7 @@ export const APP_THREADS_URL = "https://www.threads.com/@runzoa_official";
 export const APP_GITHUB_URL = "https://github.com/websszoa/runzoa.com";
 
 export const MARATHON_IMAGE_BASE_URL =
-  "https://websszoa.github.io/runzoa.com/public/marathon";
+  "https://websszoa.github.io/runzoa/public/marathon";
 
 export const APP_DESCRIPTION =
   "국내외 마라톤 대회 정보, 코스 정보, 참가 신청, 마라톤 팁과 가이드를 제공하는 종합 마라톤 정보 사이트입니다.";
