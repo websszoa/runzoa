@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MARATHON_IMAGE_BASE_URL } from "@/lib/constants";
 import { Marathon } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,7 +31,7 @@ export default function MarathonListImage({
                 이미지 준비중!
               </div>
               <Image
-                src={`${MARATHON_IMAGE_BASE_URL}/cover/${marathon.slug}.jpg`}
+                src={marathon.images?.cover?.[0] ? `/marathon/cover/${marathon.images.cover[0]}` : "/marathon/cover/no-image.jpg"}
                 alt={marathon.name || "마라톤 이미지"}
                 fill
                 sizes="(max-width: 768px) 50vw, 25vw"

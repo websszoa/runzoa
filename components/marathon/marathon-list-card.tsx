@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Marathon } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
-import { MARATHON_IMAGE_BASE_URL } from "@/lib/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -110,7 +109,11 @@ export default function MarathonListCard({
                       <Medal className="h-6 w-6" aria-hidden="true" />
                     </div>
                     <Image
-                      src={`${MARATHON_IMAGE_BASE_URL}/cover/${marathon.slug}.jpg`}
+                      src={
+                        marathon.images?.cover?.[0]
+                          ? `/marathon/cover/${marathon.images.cover[0]}`
+                          : ""
+                      }
                       alt={marathon.name || "대회 이미지"}
                       fill
                       sizes="120px"
@@ -137,7 +140,9 @@ export default function MarathonListCard({
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <UsersRound className="h-4 w-4 shrink-0 text-rose-500" />
                       <span className="truncate font-anyvid">
-                        {marathon.event_scale ? `${marathon.event_scale}명` : "미정"}
+                        {marathon.event_scale
+                          ? `${marathon.event_scale}명`
+                          : "미정"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">

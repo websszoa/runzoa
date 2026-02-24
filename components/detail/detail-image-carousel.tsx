@@ -4,7 +4,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Medal } from "lucide-react";
 import type { Marathon } from "@/lib/types";
-import { MARATHON_IMAGE_BASE_URL } from "@/lib/constants";
 import {
   Carousel,
   CarouselContent,
@@ -14,9 +13,9 @@ import {
 } from "@/components/ui/carousel";
 
 function ImageItem({ marathon }: { marathon: Marathon }) {
-  const coverSrc = marathon.slug
-    ? `${MARATHON_IMAGE_BASE_URL}/cover/${marathon.slug}.jpg`
-    : `${MARATHON_IMAGE_BASE_URL}/no-image.jpg`;
+  const coverSrc = marathon.images?.cover?.[0]
+    ? `/marathon/cover/${marathon.images.cover[0]}`
+    : "/marathon/cover/no-image.jpg";
 
   return (
     <Link href={`/marathon/${marathon.slug ?? marathon.id}`} className="block">

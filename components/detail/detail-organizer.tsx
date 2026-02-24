@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Castle } from "lucide-react";
-import { MARATHON_IMAGE_BASE_URL } from "@/lib/constants";
 import type { Marathon } from "@/lib/types";
 
 type DetailOrganizerProps = {
@@ -17,7 +16,8 @@ export default function DetailOrganizer({ marathon }: DetailOrganizerProps) {
     return null;
   }
 
-  const showCover = marathon.slug && !imageError;
+  const coverFile = marathon.images?.cover?.[0];
+  const showCover = !!coverFile && !imageError;
 
   return (
     <div className="detail__block">
@@ -25,11 +25,11 @@ export default function DetailOrganizer({ marathon }: DetailOrganizerProps) {
         <Castle className="w-5 h-5 text-brand" /> 주최
       </h3>
       <div>
-        {/* 이미지 (메인과 동일: MARATHON_IMAGE_BASE_URL + /cover/slug.jpg) */}
-        {showCover && (
+        {/* 이미지: images.cover[0] → public/marathon/cover/ */}
+        {showCover && coverFile && (
           <div className="w-full rounded-sm overflow-hidden mb-4">
             <Image
-              src={`${MARATHON_IMAGE_BASE_URL}/cover/${marathon.slug}.jpg`}
+              src={`/marathon/cover/${coverFile}`}
               alt={marathon.name}
               width={600}
               height={400}
