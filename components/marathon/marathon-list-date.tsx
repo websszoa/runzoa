@@ -1,7 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { Marathon } from "@/lib/types";
+import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import ButtonShare from "./button-share";
+import ButtonFavorite from "./button-favorite";
+import ButtonHeart from "./button-heart";
+import ButtonAlert from "./button-alert";
 import {
   formatMonthDayAndWeekday,
   formatRegistrationDistances,
@@ -9,15 +16,11 @@ import {
   getMarathonEngagementMessage,
 } from "@/lib/utils";
 import {
-  Bell,
-  Bookmark,
   ChartNoAxesCombined,
   CircleDollarSign,
   Eye,
-  Heart,
   MapPin,
   MessageSquareMore,
-  Share2,
   UsersRound,
 } from "lucide-react";
 import {
@@ -31,6 +34,19 @@ export default function MarathonListDate({
 }: {
   marathons: Marathon[];
 }) {
+  const supabase = createClient();
+  const logEngagement = (
+    marathonId: string,
+    actionType: "share" | "favorite" | "heart" | "alert",
+  ) => {
+    supabase
+      .from("marathon_engagement_log")
+      .insert({ marathon_id: marathonId, action_type: actionType });
+  };
+  const handleShareSuccess = (marathonId: string) => {
+    logEngagement(marathonId, "share");
+  };
+
   return (
     <div className="marathon__list__date">
       {marathons.map((marathon) => {
@@ -109,54 +125,19 @@ export default function MarathonListDate({
             <div className="w-[212px] shrink-0 text-center max-[900px]:basis-full max-md:w-full max-md:flex max-md:justify-center mt-2 sm:mt-0">
               <div className="max-[900px]:w-[212px] max-[900px]:mx-auto">
                 <div className="flex justify-between gap-2 mb-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="공유하기"
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">공유하기</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="즐겨찾기"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">즐겨찾기</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="좋아요"
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">좋아요</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <ButtonShare
+                    marathon={marathon}
+                    onShareSuccess={handleShareSuccess}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  />
+                  <ButtonFavorite
+                    marathonId={marathon.id}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  />
+                  <ButtonHeart
+                    marathonId={marathon.id}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  />
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -173,22 +154,10 @@ export default function MarathonListDate({
                       <p className="font-nanumNeo">댓글</p>
                     </TooltipContent>
                   </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="알림설정"
-                      >
-                        <Bell className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">알림 설정</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <ButtonAlert
+                    marathon={marathon}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                  />
                 </div>
                 <div>
                   <Button

@@ -13,7 +13,6 @@ import {
   getMarathonEngagementMessage,
   formatRegistrationDistances,
   formatRegistrationPriceRange,
-  shareMarathonLink,
 } from "@/lib/utils";
 import {
   Tooltip,
@@ -21,19 +20,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Bell,
   Building2,
   Bookmark,
   Calendar,
   ChartNoAxesCombined,
   CircleDollarSign,
   Eye,
-  Heart,
   MapPin,
   Medal,
-  Share2,
   UsersRound,
 } from "lucide-react";
+import ButtonShare from "./button-share";
+import ButtonFavorite from "./button-favorite";
+import ButtonHeart from "./button-heart";
+import ButtonAlert from "./button-alert";
 
 export default function MarathonListCard({
   marathons,
@@ -170,73 +170,24 @@ export default function MarathonListCard({
                   </div>
                 </div>
                 <div className="flex w-full flex-wrap items-center gap-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="공유하기"
-                        onClick={() =>
-                          shareMarathonLink(marathon, handleShareSuccess)
-                        }
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">공유하기</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="즐겨찾기"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">즐겨찾기</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="좋아요"
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">좋아요</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="알림설정"
-                      >
-                        <Bell className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">알림 설정</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <ButtonShare
+                    marathon={marathon}
+                    onShareSuccess={handleShareSuccess}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  />
+                  <ButtonFavorite
+                    marathonId={marathon.id}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  />
+                  <ButtonHeart
+                    marathonId={marathon.id}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  />
+
+                  <ButtonAlert
+                    marathon={marathon}
+                    className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                  />
                   <Button
                     variant="outline"
                     className="group min-w-0 flex-1 text-muted-foreground hover:bg-red-50 hover:text-red-600 hover:border-red-200"

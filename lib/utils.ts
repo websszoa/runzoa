@@ -290,6 +290,50 @@ export function copyToClipboard(url: string, onSuccess?: () => void): void {
   );
 }
 
+/**
+ * 마라톤 대회일·접수일을 구글 캘린더에 추가하는 URL 생성.
+ * 대회일 이벤트 + 상세에 접수일 정보 포함. 사용자가 캘린더 앱에서 알림 설정 가능.
+ */
+export function getAddToCalendarUrl(marathon: Marathon): string {
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "https://runzoa.com";
+  const marathonUrl = `${origin}/marathon/${marathon.slug}`;
+  const eventStart = marathon.event_start_at
+    ? new Date(marathon.event_start_at)
+    : null;
+  const eventEnd = marathon.event_end_at
+    ? new Date(marathon.event_end_at)
+    : eventStart
+      ? new Date(eventStart.getTime() + 24 * 60 * 60 * 1000)
+      : null;
+
+  const toGoogleDate = (d: Date) =>
+    d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
+  const dates =
+    eventStart && eventEnd
+      ? `${toGoogleDate(eventStart)}/${toGoogleDate(eventEnd)}`
+      : eventStart
+        ? `${toGoogleDate(eventStart)}/${toGoogleDate(new Date(eventStart.getTime() + 24 * 60 * 60 * 1000))}`
+        : "";
+
+  const regText = marathon.registration_start_at
+    ? `접수 시작: ${formatDate(marathon.registration_start_at)}. `
+    : "";
+  const details = `${regText}${marathon.description?.slice(0, 200) ?? ""} ${marathonUrl}`.trim();
+  const location = [marathon.location?.region, marathon.location?.place]
+    .filter(Boolean)
+    .join(" ");
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: marathon.name || "마라톤 대회",
+    dates: dates || "",
+    details,
+    location,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 /** 마라톤 공유: Web Share API 시도, 미지원/취소 시 링크 복사. 공유 성공 시 onShareSuccess(marathonId) 호출 */
 export function shareMarathonLink(
   marathon: Marathon,
