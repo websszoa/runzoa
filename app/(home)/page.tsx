@@ -10,5 +10,8 @@ export default async function HomePage() {
     .order("event_start_at", { ascending: false });
   if (error) console.error(error);
 
-  return <MarathonMain marathons={marathons ?? []} />;
+  const serverNow = new Date().toISOString();
+  return (
+    <MarathonMain marathons={marathons ?? []} serverNow={serverNow} />
+  );
 }

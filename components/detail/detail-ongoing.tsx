@@ -49,7 +49,10 @@ export default async function DetailOngoing({
               {marathon.name ?? "-"}
             </div>
             {marathon.event_start_at && (
-              <div className="text-xs text-gray-500 font-nanumNeo">
+              <div
+                className="text-xs text-gray-500 font-nanumNeo"
+                suppressHydrationWarning
+              >
                 {formatDate(marathon.event_start_at)}
               </div>
             )}

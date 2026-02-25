@@ -36,17 +36,11 @@ export function createNaverScheduleIcalString(marathon: Marathon): string {
     d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
 
   const start = marathon.event_start_at ? new Date(marathon.event_start_at) : null;
-  const end = marathon.event_end_at
-    ? new Date(marathon.event_end_at)
-    : start
-      ? new Date(start.getTime() + 24 * 60 * 60 * 1000)
-      : null;
+  const end = start
+    ? new Date(start.getTime() + 4 * 60 * 60 * 1000)
+    : null;
   const dtStart = start ? `DTSTART;TZID=Asia/Seoul:${toNaverLocal(start)}` : "";
-  const dtEnd = end
-    ? `DTEND;TZID=Asia/Seoul:${toNaverLocal(end)}`
-    : start
-      ? `DTEND;TZID=Asia/Seoul:${toNaverLocal(new Date(start.getTime() + 24 * 60 * 60 * 1000))}`
-      : "";
+  const dtEnd = end ? `DTEND;TZID=Asia/Seoul:${toNaverLocal(end)}` : "";
 
   const uid = `${marathon.id.replace(/-/g, "")}@runzoa.com`;
   const now = new Date();

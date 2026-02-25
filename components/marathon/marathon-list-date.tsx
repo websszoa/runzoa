@@ -57,7 +57,10 @@ export default function MarathonListDate({
           >
             {/* 대회일 */}
             <div className="w-[160px] shrink-0 py-2 sm:py-3 rounded border border-gray-200 flex flex-col items-center justify-center max-md:w-full max-md:flex-row max-md:items-center max-md:justify-between max-md:px-3">
-              <span className="font-paperlogy font-semibold text-xl sm:text-2xl pb-0 sm:pb-1 max-md:pb-0">
+              <span
+                className="font-paperlogy font-semibold text-xl sm:text-2xl pb-0 sm:pb-1 max-md:pb-0"
+                suppressHydrationWarning
+              >
                 {formatMonthDayAndWeekday(marathon.event_start_at).monthDay}
                 {formatMonthDayAndWeekday(marathon.event_start_at).weekday && (
                   <span className="text-sm px-1">
@@ -97,7 +100,10 @@ export default function MarathonListDate({
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground max-md:justify-center">
                     <ChartNoAxesCombined className="h-4 w-4 shrink-0 text-amber-500" />
-                    <span className="truncate font-anyvid">
+                    <span
+                      className="truncate font-anyvid"
+                      suppressHydrationWarning
+                    >
                       {formatRegistrationDistances(marathon.registration_price)}
                     </span>
                   </div>
@@ -105,13 +111,19 @@ export default function MarathonListDate({
                 <div className="hidden space-y-1 md:block">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <UsersRound className="h-4 w-4 shrink-0 text-rose-500" />
-                    <span className="truncate font-anyvid">
+                    <span
+                      className="truncate font-anyvid"
+                      suppressHydrationWarning
+                    >
                       {marathon.event_scale}명
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CircleDollarSign className="h-4 w-4 shrink-0 text-green-500" />
-                    <span className="truncate font-anyvid">
+                    <span
+                      className="truncate font-anyvid"
+                      suppressHydrationWarning
+                    >
                       {formatRegistrationPriceRange(
                         marathon.registration_price,
                       )}

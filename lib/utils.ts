@@ -301,20 +301,16 @@ export function getAddToCalendarUrl(marathon: Marathon): string {
   const eventStart = marathon.event_start_at
     ? new Date(marathon.event_start_at)
     : null;
-  const eventEnd = marathon.event_end_at
-    ? new Date(marathon.event_end_at)
-    : eventStart
-      ? new Date(eventStart.getTime() + 24 * 60 * 60 * 1000)
-      : null;
+  const eventEnd = eventStart
+    ? new Date(eventStart.getTime() + 4 * 60 * 60 * 1000)
+    : null;
 
   const toGoogleDate = (d: Date) =>
     d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
   const dates =
     eventStart && eventEnd
       ? `${toGoogleDate(eventStart)}/${toGoogleDate(eventEnd)}`
-      : eventStart
-        ? `${toGoogleDate(eventStart)}/${toGoogleDate(new Date(eventStart.getTime() + 24 * 60 * 60 * 1000))}`
-        : "";
+      : "";
 
   const regText = marathon.registration_start_at
     ? `접수 시작: ${formatDate(marathon.registration_start_at)}. `
@@ -397,19 +393,14 @@ export function createMarathonIcs(marathon: Marathon): string {
     d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
 
   const start = marathon.event_start_at ? new Date(marathon.event_start_at) : null;
-  const end = marathon.event_end_at
-    ? new Date(marathon.event_end_at)
-    : start
-      ? new Date(start.getTime() + 24 * 60 * 60 * 1000)
-      : null;
+  const end = start
+    ? new Date(start.getTime() + 4 * 60 * 60 * 1000)
+    : null;
 
-  // 종일 이벤트(VALUE=DATE)로 저장해 타임존 변환에 의한 날짜 오류 방지
-  const dtStart = start ? `DTSTART;VALUE=DATE:${toIcsDate(start)}` : "";
-  const dtEnd = end
-    ? `DTEND;VALUE=DATE:${toIcsDate(end)}`
-    : start
-      ? `DTEND;VALUE=DATE:${toIcsDate(new Date(start.getTime() + 24 * 60 * 60 * 1000))}`
-      : "";
+  const toIcsUtcDatetime = (d: Date) =>
+    d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
+  const dtStart = start ? `DTSTART:${toIcsUtcDatetime(start)}` : "";
+  const dtEnd = end ? `DTEND:${toIcsUtcDatetime(end)}` : "";
 
   const uid = `${marathon.id}@runzoa.com`;
   const dtstamp = toIcsUtc(new Date());

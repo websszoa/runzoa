@@ -78,7 +78,10 @@ export default function MarathonListCard({
                     {marathon.registration_status === "접수대기" && (
                       <>
                         <Badge variant="red">접수대기</Badge>
-                        <Badge className="rounded-full text-xs font-anyvid border border-red-500 bg-white text-red-500">
+                        <Badge
+                          className="rounded-full text-xs font-anyvid border border-red-500 bg-white text-red-500"
+                          suppressHydrationWarning
+                        >
                           {formatRegistrationDday(
                             marathon.registration_start_at,
                           )}
@@ -127,7 +130,10 @@ export default function MarathonListCard({
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4 shrink-0 text-blue-500" />
-                      <span className="truncate font-anyvid">
+                      <span
+                        className="truncate font-anyvid"
+                        suppressHydrationWarning
+                      >
                         {formatDateWithWeekday(marathon.event_start_at)}
                       </span>
                     </div>
@@ -139,7 +145,10 @@ export default function MarathonListCard({
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <UsersRound className="h-4 w-4 shrink-0 text-rose-500" />
-                      <span className="truncate font-anyvid">
+                      <span
+                        className="truncate font-anyvid"
+                        suppressHydrationWarning
+                      >
                         {marathon.event_scale
                           ? `${marathon.event_scale}명`
                           : "미정"}
@@ -147,7 +156,10 @@ export default function MarathonListCard({
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <ChartNoAxesCombined className="h-4 w-4 shrink-0 text-amber-500" />
-                      <span className="truncate font-anyvid">
+                      <span
+                        className="truncate font-anyvid"
+                        suppressHydrationWarning
+                      >
                         {formatRegistrationDistances(
                           marathon.registration_price,
                         )}

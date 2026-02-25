@@ -25,7 +25,16 @@ type EventFilter = "all" | string;
 type StatusFilter = "all" | "접수대기" | "접수중" | "접수마감" | "추가접수";
 type PastFilter = "exclude" | "include";
 
-export default function MarathonMain({ marathons }: { marathons: Marathon[] }) {
+type MarathonMainProps = {
+  marathons: Marathon[];
+  /** 서버 시각 ISO 문자열. 지난 대회 필터를 서버/클라이언트 동일 기준으로 맞추기 위해 사용 */
+  serverNow?: string;
+};
+
+export default function MarathonMain({
+  marathons,
+  serverNow,
+}: MarathonMainProps) {
   const isMobile = useIsMobile();
   const [viewMode, setViewMode] = useState<ViewMode>("card");
   const [keywordFilter, setKeywordFilter] = useState("");
@@ -171,18 +180,18 @@ export default function MarathonMain({ marathons }: { marathons: Marathon[] }) {
     );
   }, [eventFilteredMarathons, statusFilter]);
 
-  /** 8차 필터: 지난 대회 포함 여부 */
+  /** 8차 필터: 지난 대회 포함 여부 (serverNow 사용으로 Hydration 불일치 방지) */
   const pastFilteredMarathons = useMemo(() => {
     if (pastFilter === "include") return statusFilteredMarathons;
 
-    const now = new Date();
+    const now = serverNow ? new Date(serverNow) : new Date();
     return statusFilteredMarathons.filter((marathon) => {
       const referenceDate = new Date(
         marathon.event_end_at ?? marathon.event_start_at,
       );
       return referenceDate >= now;
     });
-  }, [statusFilteredMarathons, pastFilter]);
+  }, [statusFilteredMarathons, pastFilter, serverNow]);
 
   /** 9차 필터: 검색어(마라톤명) */
   const keywordFilteredMarathons = useMemo(() => {

@@ -27,7 +27,7 @@ export default function DetailPrice({ marathon }: DetailPriceProps) {
           return (
             <div key={key}>
               <span className="text-gray-700">{key}</span>
-              <span>{displayValue}</span>
+              <span suppressHydrationWarning>{displayValue}</span>
             </div>
           );
         })}

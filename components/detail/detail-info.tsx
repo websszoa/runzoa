@@ -40,12 +40,18 @@ export default function DetailInfo({ marathon }: DetailInfoProps) {
           <Calendar className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm text-gray-600 mb-1">대회 날짜</p>
-            <p className="font-bold text-gray-900">
+            <p
+              className="font-bold text-gray-900"
+              suppressHydrationWarning
+            >
               {eventStart}
               {eventEnd && eventEnd !== "-" ? ` ~ ${eventEnd}` : ""}
             </p>
             {startTime && (
-              <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+              <p
+                className="text-xs text-gray-600 mt-1 leading-relaxed"
+                suppressHydrationWarning
+              >
                 시작시간 : {startTime}
               </p>
             )}
@@ -75,7 +81,10 @@ export default function DetailInfo({ marathon }: DetailInfoProps) {
               {status}
             </p>
             {regStart && (
-              <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+              <p
+                className="text-xs text-gray-600 mt-1 leading-relaxed"
+                suppressHydrationWarning
+              >
                 {regStart}
                 {regEnd ? ` ~ ${regEnd}` : ""}
               </p>
@@ -88,7 +97,12 @@ export default function DetailInfo({ marathon }: DetailInfoProps) {
           <Users className="w-5 h-5 text-orange-600 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm text-gray-600 mb-1">모집 규모</p>
-            <p className="font-bold text-gray-900">{scale}</p>
+            <p
+              className="font-bold text-gray-900"
+              suppressHydrationWarning
+            >
+              {scale}
+            </p>
           </div>
         </div>
       </div>
