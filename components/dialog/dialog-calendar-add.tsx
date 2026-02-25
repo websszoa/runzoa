@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { getAddToCalendarUrl, createMarathonIcs } from "@/lib/utils";
+import { createMarathonIcs } from "@/lib/utils";
 import type { Marathon } from "@/lib/types";
 
 interface DialogCalendarAddProps {
@@ -24,10 +24,11 @@ export default function DialogCalendarAdd({
   onOpenChange,
   marathon,
 }: DialogCalendarAddProps) {
+  /** 구글 로그인 OAuth 후 캘린더 API로 일정 추가 */
   const handleAddToGoogleCalendar = () => {
     if (!marathon) return;
-    window.open(getAddToCalendarUrl(marathon), "_blank");
     onOpenChange(false);
+    window.location.href = `/api/google-calendar/authorize?state=${encodeURIComponent(marathon.id)}`;
   };
 
   /** 네이버 로그인 OAuth 후 캘린더 API로 일정 추가 */

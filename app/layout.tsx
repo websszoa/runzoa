@@ -16,6 +16,7 @@ import {
 
 import AuthToast from "@/components/auth/auth-toast";
 import NaverCalendarToast from "@/components/auth/naver-calendar-toast";
+import GoogleCalendarToast from "@/components/auth/google-calendar-toast";
 import SplashScreen from "@/components/splash/splash-screen";
 
 const anyvid = localFont({
@@ -145,6 +146,7 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <AuthToast />
               <NaverCalendarToast />
+              <GoogleCalendarToast />
             </Suspense>
             <TooltipProvider>
               <SplashScreen />
