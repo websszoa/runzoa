@@ -19,8 +19,11 @@ export default function DetailHeader({ marathon }: { marathon: Marathon }) {
         </p>
       </div>
 
-      {/* 오른쪽 D-Day / 종료 / 진행중 표시 */}
-      <div className="shrink-0 font-anyvid flex flex-col items-center px-4 py-3 rounded-xl border-2">
+      {/* 오른쪽 D-Day / 종료 / 진행중 표시 (서버/클라이언트 시각 차이로 suppressHydrationWarning) */}
+      <div
+        className="shrink-0 font-anyvid flex flex-col items-center px-4 py-3 rounded-xl border-2"
+        suppressHydrationWarning
+      >
         {status === "종료" ? (
           <div className="border-gray-900 flex flex-col items-center">
             <span className="text-xs text-gray-600 mb-1">아쉽게도</span>

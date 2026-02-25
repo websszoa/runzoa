@@ -22,16 +22,20 @@ export async function GET(request: NextRequest) {
   const baseUrl = origin;
 
   if (!code || !state) {
+    console.error("[naver-calendar] missing code or state");
     const url = new URL("/", baseUrl);
     url.searchParams.set("naver_calendar", "error");
+    url.searchParams.set("reason", "no_code");
     return NextResponse.redirect(url);
   }
 
   const clientId = process.env.NAVER_CALENDAR_CLIENT_ID;
   const clientSecret = process.env.NAVER_CALENDAR_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
+    console.error("[naver-calendar] missing NAVER_CALENDAR_CLIENT_ID or CLIENT_SECRET in env");
     const url = new URL("/", baseUrl);
     url.searchParams.set("naver_calendar", "error");
+    url.searchParams.set("reason", "env");
     return NextResponse.redirect(url);
   }
 
@@ -50,27 +54,32 @@ export async function GET(request: NextRequest) {
   try {
     tokenRes = await fetch(`${NAVER_TOKEN_URL}?${tokenParams.toString()}`, { method: "GET" });
   } catch (e) {
-    console.error("Naver token request failed:", e);
+    console.error("[naver-calendar] token request failed:", e);
     const url = new URL("/", baseUrl);
     url.searchParams.set("naver_calendar", "error");
+    url.searchParams.set("reason", "token_network");
     return NextResponse.redirect(url);
   }
 
   if (!tokenRes.ok) {
     const text = await tokenRes.text();
-    console.error("Naver token error:", tokenRes.status, text);
+    console.error("[naver-calendar] token error:", tokenRes.status, text);
     const url = new URL("/", baseUrl);
     url.searchParams.set("naver_calendar", "error");
+    url.searchParams.set("reason", "token");
     return NextResponse.redirect(url);
   }
 
   const tokenData = (await tokenRes.json()) as { access_token?: string };
   const accessToken = tokenData.access_token;
   if (!accessToken) {
+    console.error("[naver-calendar] token response has no access_token");
     const url = new URL("/", baseUrl);
     url.searchParams.set("naver_calendar", "error");
+    url.searchParams.set("reason", "token");
     return NextResponse.redirect(url);
   }
+  console.log("[naver-calendar] token ok, marathonId:", state);
 
   // 2. marathon 조회
   const supabase = await createClient();
@@ -81,10 +90,13 @@ export async function GET(request: NextRequest) {
     .single();
 
   if (fetchError || !marathon) {
+    console.error("[naver-calendar] marathon fetch failed:", fetchError?.message ?? "no data");
     const url = new URL("/", baseUrl);
     url.searchParams.set("naver_calendar", "error");
+    url.searchParams.set("reason", "marathon");
     return NextResponse.redirect(url);
   }
+  console.log("[naver-calendar] marathon ok:", marathon.name ?? marathon.id);
 
   // 3. Naver 캘린더 API 호출
   const scheduleIcalString = createNaverScheduleIcalString(marathon as import("@/lib/types").Marathon);
@@ -104,9 +116,10 @@ export async function GET(request: NextRequest) {
       body: body.toString(),
     });
   } catch (e) {
-    console.error("Naver calendar API request failed:", e);
+    console.error("[naver-calendar] calendar API request failed:", e);
     const url = new URL("/", baseUrl);
     url.searchParams.set("naver_calendar", "error");
+    url.searchParams.set("reason", "api_network");
     return NextResponse.redirect(url);
   }
 
@@ -118,9 +131,11 @@ export async function GET(request: NextRequest) {
 
   if (!calendarRes.ok) {
     const text = await calendarRes.text();
-    console.error("Naver calendar API error:", calendarRes.status, text);
+    console.error("[naver-calendar] calendar API error:", calendarRes.status, text);
+    failUrl.searchParams.set("reason", "api");
     return NextResponse.redirect(failUrl);
   }
 
+  console.log("[naver-calendar] success, redirect to marathon:", slug);
   return NextResponse.redirect(successUrl);
 }
