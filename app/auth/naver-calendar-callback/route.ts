@@ -4,6 +4,8 @@ import { createNaverScheduleIcalString } from "@/lib/naver-calendar";
 
 const NAVER_TOKEN_URL = "https://nid.naver.com/oauth2.0/token";
 const NAVER_CALENDAR_API_URL = "https://openapi.naver.com/calendar/createSchedule.json";
+const TOKEN_COOKIE = "naver_cal_token";
+const NAVER_TOKEN_EXPIRES_SECONDS = 3600; // 네이버 access_token 유효시간 1시간
 
 /**
  * 네이버 OAuth 콜백: code로 access_token 발급 후 캘린더 API로 일정 추가.
@@ -137,5 +139,13 @@ export async function GET(request: NextRequest) {
   }
 
   console.log("[naver-calendar] success, redirect to marathon:", slug);
-  return NextResponse.redirect(successUrl);
+  const response = NextResponse.redirect(successUrl);
+  response.cookies.set(TOKEN_COOKIE, accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: NAVER_TOKEN_EXPIRES_SECONDS,
+    path: "/",
+  });
+  return response;
 }
