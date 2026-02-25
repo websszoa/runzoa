@@ -20,7 +20,8 @@ export function createNaverScheduleIcalString(marathon: Marathon): string {
   const description = `${regText}${marathon.description?.slice(0, 300) ?? ""} ${marathonUrl}`.trim()
     .replace(/\\/g, "\\\\")
     .replace(/;/g, "\\;")
-    .replace(/,/g, "\\,");
+    .replace(/,/g, "\\,")
+    .replace(/\r\n|\r|\n/g, "\\n");
 
   const toNaverLocal = (d: Date) => {
     const y = d.getFullYear();
@@ -83,7 +84,7 @@ export function createNaverScheduleIcalString(marathon: Marathon): string {
     "END:VEVENT",
     "END:VCALENDAR",
   ];
-  return lines.join("\n");
+  return lines.join("\r\n");
 }
 
 function formatDateNaver(date: string | null | undefined): string {
@@ -105,6 +106,7 @@ export function getNaverCalendarAuthorizeUrl(redirectUri: string, state: string)
     client_id: clientId,
     redirect_uri: redirectUri,
     state,
+    scope: "calendar",
   });
   return `https://nid.naver.com/oauth2.0/authorize?${params.toString()}`;
 }
