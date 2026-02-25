@@ -334,6 +334,105 @@ export function getAddToCalendarUrl(marathon: Marathon): string {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
+/** ICS(iCalendar) 형식 문자열에서 특수문자 이스케이프 */
+function icsEscape(s: string): string {
+  return s
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r\n|\r|\n/g, "\\n");
+}
+
+/** ICS RFC 5545 줄 접기: 75옥텟 초과 시 CRLF + 공백으로 분리 */
+function icsFold(line: string): string {
+  const maxBytes = 75;
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(line);
+  if (bytes.length <= maxBytes) return line;
+
+  const result: string[] = [];
+  let start = 0;
+  let first = true;
+  while (start < bytes.length) {
+    const limit = first ? maxBytes : maxBytes - 1;
+    let end = start + limit;
+    if (end >= bytes.length) {
+      result.push((first ? "" : " ") + new TextDecoder().decode(bytes.slice(start)));
+      break;
+    }
+    // UTF-8 멀티바이트 경계에서 자르지 않도록 후퇴
+    while (end > start && (bytes[end] & 0xc0) === 0x80) end--;
+    result.push((first ? "" : " ") + new TextDecoder().decode(bytes.slice(start, end)));
+    start = end;
+    first = false;
+  }
+  return result.join("\r\n");
+}
+
+/** 로컬(KST) 날짜를 ICS DATE 형식 YYYYMMDD로 변환 */
+function toIcsDate(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}${month}${day}`;
+}
+
+/** 마라톤 일정을 ICS 파일 내용으로 반환. 네이버 캘린더 등에서 가져오기 시 사용 */
+export function createMarathonIcs(marathon: Marathon): string {
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "https://runzoa.com";
+  const marathonUrl = `${origin}/marathon/${marathon.slug}`;
+  const summary = icsEscape(marathon.name || "마라톤 대회");
+  const location = icsEscape(
+    [marathon.location?.region, marathon.location?.place].filter(Boolean).join(" ") || "",
+  );
+  const regText = marathon.registration_start_at
+    ? `접수 시작: ${formatDate(marathon.registration_start_at)}. `
+    : "";
+  const description = icsEscape(
+    `${regText}${marathon.description?.slice(0, 300) ?? ""} ${marathonUrl}`.trim(),
+  );
+
+  const toIcsUtc = (d: Date) =>
+    d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
+
+  const start = marathon.event_start_at ? new Date(marathon.event_start_at) : null;
+  const end = marathon.event_end_at
+    ? new Date(marathon.event_end_at)
+    : start
+      ? new Date(start.getTime() + 24 * 60 * 60 * 1000)
+      : null;
+
+  // 종일 이벤트(VALUE=DATE)로 저장해 타임존 변환에 의한 날짜 오류 방지
+  const dtStart = start ? `DTSTART;VALUE=DATE:${toIcsDate(start)}` : "";
+  const dtEnd = end
+    ? `DTEND;VALUE=DATE:${toIcsDate(end)}`
+    : start
+      ? `DTEND;VALUE=DATE:${toIcsDate(new Date(start.getTime() + 24 * 60 * 60 * 1000))}`
+      : "";
+
+  const uid = `${marathon.id}@runzoa.com`;
+  const dtstamp = toIcsUtc(new Date());
+
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Runzoa//Marathon//KO",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${dtstamp}`,
+    dtStart,
+    dtEnd,
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${location}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].filter(Boolean);
+
+  return lines.map(icsFold).join("\r\n");
+}
+
 /** 마라톤 공유: Web Share API 시도, 미지원/취소 시 링크 복사. 공유 성공 시 onShareSuccess(marathonId) 호출 */
 export function shareMarathonLink(
   marathon: Marathon,
