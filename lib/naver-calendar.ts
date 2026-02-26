@@ -1,6 +1,31 @@
 import type { Marathon } from "@/lib/types";
 import { buildCalendarDescription } from "@/lib/utils";
 
+/** RFC 5545 ICS 라인 폴딩: 75옥텟 초과 시 CRLF + 공백으로 분리 */
+function icsFold(line: string): string {
+  const maxBytes = 75;
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(line);
+  if (bytes.length <= maxBytes) return line;
+
+  const result: string[] = [];
+  let start = 0;
+  let first = true;
+  while (start < bytes.length) {
+    const limit = first ? maxBytes : maxBytes - 1;
+    let end = start + limit;
+    if (end >= bytes.length) {
+      result.push((first ? "" : " ") + new TextDecoder().decode(bytes.slice(start)));
+      break;
+    }
+    while (end > start && (bytes[end] & 0xc0) === 0x80) end--;
+    result.push((first ? "" : " ") + new TextDecoder().decode(bytes.slice(start, end)));
+    start = end;
+    first = false;
+  }
+  return result.join("\r\n");
+}
+
 /** Naver 캘린더 API용 iCalendar 문자열 생성 (종일 이벤트) */
 export function createNaverScheduleIcalString(marathon: Marathon): string {
   const origin =
@@ -32,9 +57,10 @@ export function createNaverScheduleIcalString(marathon: Marathon): string {
     d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
 
   const start = marathon.event_start_at ? new Date(marathon.event_start_at) : null;
-  // 종일 이벤트: 캘린더 그리드에서 시간 표시 없이 제목만 노출
+  // 종일 이벤트: DTEND는 RFC 5545 규격상 시작일 +1일 (exclusive end)
+  const nextDay = start ? new Date(start.getTime() + 24 * 60 * 60 * 1000) : null;
   const dtStart = start ? `DTSTART;VALUE=DATE:${toIcsDate(start)}` : "";
-  const dtEnd = start ? `DTEND;VALUE=DATE:${toIcsDate(start)}` : "";
+  const dtEnd = nextDay ? `DTEND;VALUE=DATE:${toIcsDate(nextDay)}` : "";
 
   const uid = `${marathon.id.replace(/-/g, "")}@runzoa.com`;
   const now = new Date();
@@ -63,7 +89,9 @@ export function createNaverScheduleIcalString(marathon: Marathon): string {
     "END:VEVENT",
     "END:VCALENDAR",
   ].filter(Boolean);
-  return lines.join("\r\n");
+
+  // RFC 5545 라인 폴딩 적용 후 CRLF로 결합
+  return lines.map(icsFold).join("\r\n");
 }
 
 /** 네이버 캘린더 OAuth 인증 URL (state에 marathonId 전달). 서버 전용. */

@@ -435,9 +435,10 @@ export function createMarathonIcs(marathon: Marathon): string {
     d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
 
   const start = marathon.event_start_at ? new Date(marathon.event_start_at) : null;
-  // 종일 이벤트: DTSTART;VALUE=DATE:YYYYMMDD
+  // 종일 이벤트: DTEND는 +1일 (RFC 5545 exclusive end)
+  const nextDay = start ? new Date(start.getTime() + 24 * 60 * 60 * 1000) : null;
   const dtStart = start ? `DTSTART;VALUE=DATE:${toIcsDate(start)}` : "";
-  const dtEnd = start ? `DTEND;VALUE=DATE:${toIcsDate(start)}` : "";
+  const dtEnd = nextDay ? `DTEND;VALUE=DATE:${toIcsDate(nextDay)}` : "";
 
   const uid = `${marathon.id}@runzoa.com`;
   const dtstamp = toIcsUtc(new Date());
