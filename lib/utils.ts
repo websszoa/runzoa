@@ -294,28 +294,75 @@ export function copyToClipboard(url: string, onSuccess?: () => void): void {
  * 마라톤 대회일·접수일을 구글 캘린더에 추가하는 URL 생성.
  * 대회일 이벤트 + 상세에 접수일 정보 포함. 사용자가 캘린더 앱에서 알림 설정 가능.
  */
+/** 캘린더 메모(description) 텍스트 생성 (Naver/Google 공통) */
+export function buildCalendarDescription(marathon: Marathon, marathonUrl: string): string {
+  const lines: string[] = [];
+
+  lines.push(marathon.name || "마라톤 대회");
+  if (marathon.description) {
+    lines.push(marathon.description);
+  }
+  lines.push("");
+
+  if (marathon.event_start_at) {
+    const d = new Date(marathon.event_start_at);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const h = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    lines.push(`대회 날짜 : ${y}.${m}.${day} ${h}:${min}`);
+  }
+
+  const regStart = marathon.registration_start_at;
+  const regEnd = marathon.registration_end_at;
+  if (regStart || regEnd) {
+    const formatDot = (ds: string) => {
+      const d = new Date(ds);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}.${m}.${day}`;
+    };
+    const start = regStart ? formatDot(regStart) : "";
+    const end = regEnd ? formatDot(regEnd) : "";
+    if (start && end) {
+      lines.push(`접수 날짜 : ${start} ~ ${end}`);
+    } else if (start) {
+      lines.push(`접수 날짜 : ${start}`);
+    }
+  }
+
+  if (marathon.registration_price && marathon.registration_price.length > 0) {
+    const priceText = marathon.registration_price
+      .filter((p) => p.price !== null)
+      .map((p) => `${p.distance}: ${p.price}원`)
+      .join(", ");
+    if (priceText) lines.push(`참가비 : ${priceText}`);
+  }
+
+  lines.push(`자세히 보기 : ${marathonUrl}`);
+  lines.push(`런조아 : https://runzoa.com`);
+
+  return lines.join("\n");
+}
+
 export function getAddToCalendarUrl(marathon: Marathon): string {
   const origin =
     typeof window !== "undefined" ? window.location.origin : "https://runzoa.com";
   const marathonUrl = `${origin}/marathon/${marathon.slug}`;
-  const eventStart = marathon.event_start_at
-    ? new Date(marathon.event_start_at)
-    : null;
-  const eventEnd = eventStart
-    ? new Date(eventStart.getTime() + 4 * 60 * 60 * 1000)
-    : null;
 
-  const toGoogleDate = (d: Date) =>
-    d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
-  const dates =
-    eventStart && eventEnd
-      ? `${toGoogleDate(eventStart)}/${toGoogleDate(eventEnd)}`
-      : "";
+  const eventStart = marathon.event_start_at ? new Date(marathon.event_start_at) : null;
+  const toAllDayDate = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}${m}${day}`;
+  };
+  // 종일 이벤트: YYYYMMDD/YYYYMMDD (당일 하루)
+  const dates = eventStart ? `${toAllDayDate(eventStart)}/${toAllDayDate(eventStart)}` : "";
 
-  const regText = marathon.registration_start_at
-    ? `접수 시작: ${formatDate(marathon.registration_start_at)}. `
-    : "";
-  const details = `${regText}${marathon.description?.slice(0, 200) ?? ""} ${marathonUrl}`.trim();
+  const details = buildCalendarDescription(marathon, marathonUrl);
   const location = [marathon.location?.region, marathon.location?.place]
     .filter(Boolean)
     .join(" ");
@@ -382,25 +429,15 @@ export function createMarathonIcs(marathon: Marathon): string {
   const location = icsEscape(
     [marathon.location?.region, marathon.location?.place].filter(Boolean).join(" ") || "",
   );
-  const regText = marathon.registration_start_at
-    ? `접수 시작: ${formatDate(marathon.registration_start_at)}. `
-    : "";
-  const description = icsEscape(
-    `${regText}${marathon.description?.slice(0, 300) ?? ""} ${marathonUrl}`.trim(),
-  );
+  const description = icsEscape(buildCalendarDescription(marathon, marathonUrl));
 
   const toIcsUtc = (d: Date) =>
     d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
 
   const start = marathon.event_start_at ? new Date(marathon.event_start_at) : null;
-  const end = start
-    ? new Date(start.getTime() + 4 * 60 * 60 * 1000)
-    : null;
-
-  const toIcsUtcDatetime = (d: Date) =>
-    d.toISOString().replace(/-|:|\.\d{3}/g, "").slice(0, 15) + "Z";
-  const dtStart = start ? `DTSTART:${toIcsUtcDatetime(start)}` : "";
-  const dtEnd = end ? `DTEND:${toIcsUtcDatetime(end)}` : "";
+  // 종일 이벤트: DTSTART;VALUE=DATE:YYYYMMDD
+  const dtStart = start ? `DTSTART;VALUE=DATE:${toIcsDate(start)}` : "";
+  const dtEnd = start ? `DTEND;VALUE=DATE:${toIcsDate(start)}` : "";
 
   const uid = `${marathon.id}@runzoa.com`;
   const dtstamp = toIcsUtc(new Date());

@@ -26,7 +26,7 @@ export interface MenuItem {
 // 기본 메뉴
 export const basicMenuItems: MenuItem[] = [
   { icon: Home, label: "홈", href: "/" },
-  { icon: Newspaper, label: "공지사항", href: "/notice" },
+  { icon: Newspaper, label: "소식", href: "/news" },
   { icon: Rat, label: "문의하기", href: "/contact" },
   { icon: Compass, label: "이용약관", href: "/terms" },
   { icon: Drama, label: "개인정보취급방침", href: "/privacy" },
@@ -56,7 +56,7 @@ export const footerMenuItems: MenuItem[] = [
 // 모바일 메뉴
 export const mobileMenuItems: MenuItem[] = [
   { icon: Home, label: "홈", href: "/" },
-  { icon: Newspaper, label: "공지사항", href: "/notice" },
+  { icon: Newspaper, label: "소식", href: "/news" },
   { icon: Rat, label: "문의하기", href: "/contact" },
   { icon: Component, label: "더보기", href: "#more" },
 ];

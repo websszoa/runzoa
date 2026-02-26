@@ -9,19 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   formatDateWithWeekday,
+  formatTimeToKorean,
   formatRegistrationDday,
   getMarathonEngagementMessage,
   formatRegistrationDistances,
   formatRegistrationPriceRange,
 } from "@/lib/utils";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   Building2,
-  Bookmark,
   Calendar,
   ChartNoAxesCombined,
   CircleDollarSign,
@@ -135,6 +130,9 @@ export default function MarathonListCard({
                         suppressHydrationWarning
                       >
                         {formatDateWithWeekday(marathon.event_start_at)}
+                        {formatTimeToKorean(marathon.event_start_at) && (
+                          <> · {formatTimeToKorean(marathon.event_start_at)}</>
+                        )}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">

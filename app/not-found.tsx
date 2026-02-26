@@ -52,9 +52,9 @@ export default function NotFound() {
             size="lg"
             className="w-full sm:w-auto"
           >
-            <Link href="/notice">
+            <Link href="/news">
               <Search className="size-4" />
-              공지사항 보기
+              소식 보기
             </Link>
           </Button>
         </div>
