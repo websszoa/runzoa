@@ -29,6 +29,20 @@ export default function HeaderNav() {
         })}
 
         <Separator className="my-2" />
+
+        {userMenuItems.map((item) => {
+          const isActive = pathname === item.href;
+
+          return (
+            <HeaderNavLink
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              isActive={isActive}
+            />
+          );
+        })}
       </nav>
     </ScrollArea>
   );
