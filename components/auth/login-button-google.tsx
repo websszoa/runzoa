@@ -4,26 +4,29 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export default function LoginButtonGoogle() {
   const [loading, setLoading] = useState(false);
 
   const loginWithGoogle = async () => {
     setLoading(true);
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          prompt: "select_account",
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            prompt: "select_account",
+          },
         },
-      },
-    });
-
-    // 리다이렉트 실패 또는 에러 시 로딩 해제
-    if (error) setLoading(false);
+      });
+      if (error) throw error;
+    } catch {
+      toast.error("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setLoading(false);
+    }
   };
 
   return (
