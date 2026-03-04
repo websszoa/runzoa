@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import { Suspense } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { SheetProvider } from "@/contexts/sheet-context";
+import { Toaster } from "sonner";
+import { LoginProvider } from "@/contexts/login-context";
 import {
   APP_DESCRIPTION,
   APP_KEYWORDS,
@@ -8,6 +13,8 @@ import {
   APP_SITE_URL,
   APP_SLOGAN,
 } from "@/lib/constants";
+
+import AuthToast from "@/components/auth/auth-toast";
 
 const anyvid = localFont({
   variable: "--font-anyvid",
@@ -122,7 +129,23 @@ export default function RootLayout({
       <body
         className={`${anyvid.variable} ${nanumSquare.variable} ${paperlogy.variable}`}
       >
-        {children}
+        <LoginProvider>
+          <SheetProvider>
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                classNames: {
+                  title: "font-anyvid",
+                  description: "font-anyvid",
+                },
+              }}
+            />
+            <Suspense fallback={null}>
+              <AuthToast />
+            </Suspense>
+            <TooltipProvider>{children}</TooltipProvider>
+          </SheetProvider>
+        </LoginProvider>
       </body>
     </html>
   );

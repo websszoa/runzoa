@@ -124,7 +124,7 @@ export default function PagePrivacy() {
       </p>
 
       <p className="pt-4">
-        본 개인정보처리방침은 2026년 1월 1일 부터 시행합니다.
+        본 개인정보처리방침은 2026년 1월 1일부터 시행합니다.
       </p>
     </div>
   );

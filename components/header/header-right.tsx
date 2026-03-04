@@ -3,6 +3,7 @@
 import { Medal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useSheet } from "@/contexts/sheet-context";
 
 import HeaderSheet from "./header-sheet";
 import HeaderUser from "./header-user";
@@ -10,9 +11,11 @@ import HeaderNav from "./header-nav";
 import HeaderInfo from "./header-info";
 
 export default function HeaderRight() {
+  const { isOpen, setIsOpen } = useSheet();
+
   return (
     <>
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"

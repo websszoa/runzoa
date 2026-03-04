@@ -1,8 +1,8 @@
 "use client";
 
 import { APP_NAME } from "@/lib/constants";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useLogin } from "@/contexts/login-context";
 import {
   SheetDescription,
   SheetHeader,
@@ -11,6 +11,7 @@ import {
 
 export default function HeaderSheet() {
   const user = null;
+  const { openLogin } = useLogin();
 
   return (
     <SheetHeader className="border-b border-brand/10">
@@ -30,6 +31,7 @@ export default function HeaderSheet() {
             size="sm"
             type="button"
             className="text-[12px] rounded-full px-2.5 font-paperlogy bg-brand hover:bg-brand/90 text-white font-normal h-6"
+            onClick={openLogin}
           >
             로그인
           </Button>

@@ -28,7 +28,7 @@ export const basicMenuItems: MenuItem[] = [
   { icon: Newspaper, label: "공지사항", href: "/notice" },
   { icon: Rat, label: "문의하기", href: "/contact" },
   { icon: Compass, label: "이용약관", href: "/terms" },
-  { icon: Drama, label: "개인정보취급방침", href: "/privacy" },
+  { icon: Drama, label: "개인정보처리방침", href: "/privacy" },
 ];
 
 // 로그인 안 했을 때

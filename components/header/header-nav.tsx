@@ -4,10 +4,12 @@ import { basicMenuItems, guestMenuItems, userMenuItems } from "@/lib/menu";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePathname } from "next/navigation";
+import { useSheet } from "@/contexts/sheet-context";
 
 import HeaderNavLink from "./header-nav-link";
 
 export default function HeaderNav() {
+  const { setIsOpen } = useSheet();
   const pathname = usePathname();
   const user = true;
 
@@ -24,6 +26,7 @@ export default function HeaderNav() {
               icon={item.icon}
               label={item.label}
               isActive={isActive}
+              onClick={() => setIsOpen(false)}
             />
           );
         })}
@@ -40,6 +43,7 @@ export default function HeaderNav() {
               icon={item.icon}
               label={item.label}
               isActive={isActive}
+              onClick={() => setIsOpen(false)}
             />
           );
         })}
