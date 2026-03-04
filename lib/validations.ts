@@ -8,3 +8,12 @@ export const profileNameSchema = z.object({
     .min(3, "이름은 3자 이상 입력해주세요")
     .max(18, "이름은 18자 이내로 입력해주세요"),
 });
+
+// 문의하기 폼 스키마
+export const contactSchema = z.object({
+  user_email: z.email("올바른 이메일 형식을 입력해주세요"),
+  message: z
+    .string()
+    .min(10, "문의 내용을 10자 이상 입력해주세요")
+    .max(1000, "문의 내용은 1000자 이내로 입력해주세요"),
+});

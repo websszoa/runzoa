@@ -1,8 +1,11 @@
 import z from "zod";
-import { profileNameSchema } from "./validations";
+import { contactSchema, profileNameSchema } from "./validations";
 
 // 프로필 이름 변경 폼 타입
 export type ProfileNameFormValues = z.infer<typeof profileNameSchema>;
+
+// 문의하기 폼 타입 (contact)
+export type ContactFormValues = z.infer<typeof contactSchema>;
 
 // 프로필 타입
 export interface Profile {
