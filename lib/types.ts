@@ -28,3 +28,17 @@ export interface Profile {
   updated_at: string;
   deleted_at: string | null;
 }
+
+// 문의 타입 (관리자 페이지에서 사용)
+export interface Contact {
+  id: string;
+  user_id: string;
+  user_email?: string | null;
+  message: string;
+  status: "pending" | "progress" | "resolved" | "closed";
+  admin_reply: string | null;
+  admin_id: string | null;
+  resolved_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
