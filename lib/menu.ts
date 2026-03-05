@@ -62,6 +62,6 @@ export const mobileMenuItems: MenuItem[] = [
 export const adminMenuItems: MenuItem[] = [
   { icon: Home, label: "대시보드", href: "/admin" },
   { icon: Gamepad2, label: "문의사항", href: "/admin/contact" },
-  { icon: Cable, label: "회원", href: "/admin/member" },
+  { icon: Cable, label: "회원관리", href: "/admin/member" },
   { icon: Helicopter, label: "마라톤", href: "/admin/marathon" },
 ];

@@ -17,7 +17,7 @@ import {
   Eye,
   LogOut,
   Mail,
-  MessageSquare,
+  Baby,
   Pencil,
   Shield,
   Trash2,
@@ -185,49 +185,53 @@ export default function PageProfile({ profile, contacts }: PageProfileProps) {
 
         {/* 오른쪽: 내 문의사항 */}
         <div className="border border-gray-200 rounded-lg p-4 sm:p-6">
-          <h3 className="font-paperlogy mb-2">내 문의사항</h3>
-
           {contacts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center min-h-[200px] text-muted-foreground">
-              <MessageSquare className="w-10 h-10 mb-3 text-gray-300" />
-              <p className="text-sm font-anyvid">문의 내역이 없습니다.</p>
+            <div className="rounded-lg border border-dashed border-gray-300 py-6 px-6 text-center">
+              <Baby className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-gray-700 font-nanumNeo mb-1">문의하기</h3>
+              <p className="text-sm text-muted-foreground font-anyvid mb-4">
+                문의하기를 통해 남겨주신 문의 내용이 이곳에 표시됩니다.
+              </p>
             </div>
           ) : (
-            <div className="space-y-3 overflow-y-auto max-h-[480px] pr-1">
-              {contacts.map((contact) => {
-                const status = statusConfig[contact.status];
-                return (
-                  <div
-                    key={contact.id}
-                    className="rounded-lg border border-gray-200 px-4 py-3 hover:shadow-sm transition-all duration-200 hover:border-brand/50"
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-anyvid shrink-0 ${status.className}`}
-                      >
-                        {status.label}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-anyvid">
-                        {formatDate(contact.created_at)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-700 font-anyvid line-clamp-2 leading-relaxed">
-                      {contact.message}
-                    </p>
-                    {contact.admin_reply && (
-                      <div className="mt-2 pt-2 border-t border-gray-100">
-                        <p className="text-sm text-muted-foreground font-anyvid leading-relaxed">
-                          <span className="text-brand font-medium mr-1">
-                            답변:
-                          </span>
-                          {contact.admin_reply}
-                        </p>
+            <>
+              <h3 className="font-paperlogy mb-2">내 문의사항</h3>
+              <div className="space-y-3 overflow-y-auto max-h-[480px] pr-1">
+                {contacts.map((contact) => {
+                  const status = statusConfig[contact.status];
+                  return (
+                    <div
+                      key={contact.id}
+                      className="rounded-lg border border-gray-200 px-4 py-3 hover:shadow-sm transition-all duration-200 hover:border-brand/50"
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full font-anyvid shrink-0 ${status.className}`}
+                        >
+                          {status.label}
+                        </span>
+                        <span className="text-xs text-muted-foreground font-anyvid">
+                          {formatDate(contact.created_at)}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                      <p className="text-sm text-gray-700 font-anyvid line-clamp-2 leading-relaxed">
+                        {contact.message}
+                      </p>
+                      {contact.admin_reply && (
+                        <div className="mt-2 pt-2 border-t border-gray-100">
+                          <p className="text-sm text-muted-foreground font-anyvid leading-relaxed">
+                            <span className="text-brand font-medium mr-1">
+                              답변:
+                            </span>
+                            {contact.admin_reply}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
