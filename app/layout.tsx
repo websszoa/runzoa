@@ -15,6 +15,8 @@ import {
 } from "@/lib/constants";
 
 import AuthToast from "@/components/auth/auth-toast";
+import SplashScreen from "@/components/splash/splash-screen";
+import BodyFadeIn from "@/components/splash/body-fade-in";
 
 const anyvid = localFont({
   variable: "--font-anyvid",
@@ -129,6 +131,8 @@ export default function RootLayout({
       <body
         className={`${anyvid.variable} ${nanumSquare.variable} ${paperlogy.variable}`}
       >
+        <SplashScreen />
+        <BodyFadeIn>
         <LoginProvider>
           <SheetProvider>
             <Toaster
@@ -146,6 +150,7 @@ export default function RootLayout({
             <TooltipProvider>{children}</TooltipProvider>
           </SheetProvider>
         </LoginProvider>
+        </BodyFadeIn>
       </body>
     </html>
   );
