@@ -87,12 +87,14 @@ export default function MarathonListDate({
                   </div>
                 </div>
                 <div className="hidden space-y-1 md:block">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <UsersRound className="h-4 w-4 shrink-0 text-rose-500" />
-                    <span className="truncate font-anyvid">
-                      {marathon.event_scale}명
-                    </span>
-                  </div>
+                  {marathon.event_scale != null && marathon.event_scale > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <UsersRound className="h-4 w-4 shrink-0 text-rose-500" />
+                      <span className="truncate font-anyvid">
+                        {marathon.event_scale}명
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CircleDollarSign className="h-4 w-4 shrink-0 text-green-500" />
                     <span className="truncate font-anyvid">

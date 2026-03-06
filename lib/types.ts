@@ -2,6 +2,8 @@ import z from "zod";
 import {
   adminLoginSchema,
   contactSchema,
+  marathonAddSchema,
+  marathonEditSchema,
   profileNameSchema,
 } from "./validations";
 
@@ -13,6 +15,12 @@ export type ContactFormValues = z.infer<typeof contactSchema>;
 
 // 관리자 로그인 폼 타입
 export type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
+
+// 마라톤 추가 폼 타입
+export type MarathonAddFormValues = z.infer<typeof marathonAddSchema>;
+
+// 마라톤 수정 폼 타입
+export type MarathonEditFormValues = z.infer<typeof marathonEditSchema>;
 
 // 프로필 타입
 export interface Profile {
@@ -115,7 +123,6 @@ export interface Marathon {
   registration_add_start_at: string | null;
   registration_add_end_at: string | null;
   registration_price: MarathonRegistrationPrice | null;
-  registration_site: string | null;
 
   images: MarathonImages | null;
   location: MarathonLocation | null;

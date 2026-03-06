@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { Marathon } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { MARATHON_IMAGE_BASE_URL } from "@/lib/constants";
@@ -34,6 +35,42 @@ import {
   Share2,
   UsersRound,
 } from "lucide-react";
+
+function MarathonCoverImage({
+  src,
+  name,
+  index,
+}: {
+  src: string | null | undefined;
+  name: string;
+  index: number;
+}) {
+  const [hasError, setHasError] = useState(false);
+  const normalizedSrc = src
+    ? src.startsWith("http") || src.startsWith("/")
+      ? src
+      : `${MARATHON_IMAGE_BASE_URL}/${src.replace(/^\//, "")}`
+    : null;
+
+  return (
+    <div className="relative flex h-[160px] w-[120px] overflow-hidden rounded shrink-0 bg-gray-100">
+      <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+        <Medal className="h-6 w-6" aria-hidden="true" />
+      </div>
+      {normalizedSrc && !hasError && (
+        <Image
+          src={normalizedSrc}
+          alt={name || "대회 이미지"}
+          fill
+          sizes="120px"
+          loading={index === 0 ? "eager" : "lazy"}
+          className="object-cover"
+          onError={() => setHasError(true)}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function MarathonListCard({
   marathons,
@@ -82,7 +119,12 @@ export default function MarathonListCard({
                       </>
                     )}
                     {marathon.registration_status === "접수중" && (
-                      <Badge variant="destructive">접수중</Badge>
+                      <>
+                        <Badge variant="destructive">접수중</Badge>
+                        <Badge className="rounded-full text-xs font-anyvid border border-red-500 bg-white text-red-500">
+                          현재 접수하고 있어요!!👌🏻
+                        </Badge>
+                      </>
                     )}
                     {marathon.registration_status === "접수마감" && (
                       <Badge variant="black">접수마감</Badge>
@@ -95,22 +137,11 @@ export default function MarathonListCard({
               </CardHeader>
               <CardContent className="flex h-full flex-col gap-4 px-4 md:px-6">
                 <div className="flex gap-3">
-                  <div className="relative flex h-[160px] w-[120px] overflow-hidden rounded shrink-0 bg-gray-100">
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                      <Medal className="h-6 w-6" aria-hidden="true" />
-                    </div>
-                    <Image
-                      src={`${MARATHON_IMAGE_BASE_URL}/cover/${marathon.slug}.jpg`}
-                      alt={marathon.name || "대회 이미지"}
-                      fill
-                      sizes="120px"
-                      loading={index === 0 ? "eager" : "lazy"}
-                      className="object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                  </div>
+                  <MarathonCoverImage
+                    src={marathon.images?.cover?.[0]}
+                    name={marathon.name || ""}
+                    index={index}
+                  />
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4 shrink-0 text-blue-500" />
@@ -124,12 +155,15 @@ export default function MarathonListCard({
                         {marathon.location?.region}, {marathon.location?.place}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <UsersRound className="h-4 w-4 shrink-0 text-rose-500" />
-                      <span className="truncate font-anyvid">
-                        {marathon.event_scale}명
-                      </span>
-                    </div>
+                    {marathon.event_scale != null &&
+                      marathon.event_scale > 0 && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <UsersRound className="h-4 w-4 shrink-0 text-rose-500" />
+                          <span className="truncate font-anyvid">
+                            {marathon.event_scale}명
+                          </span>
+                        </div>
+                      )}
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <ChartNoAxesCombined className="h-4 w-4 shrink-0 text-amber-500" />
                       <span className="truncate font-anyvid">
