@@ -8,12 +8,14 @@ import {
   Cable,
   Gamepad2,
   Helicopter,
-  User,
-  Star,
+  Snail,
   Hamburger,
   Projector,
   Gem,
   Component,
+  CableCar,
+  Heater,
+  FerrisWheel,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -33,14 +35,16 @@ export const basicMenuItems: MenuItem[] = [
 
 // 로그인 안 했을 때
 export const guestMenuItems: MenuItem[] = [
-  { icon: User, label: "내 정보", href: "/profile" },
-  { icon: Star, label: "즐겨찾기", href: "/favorites" },
+  { icon: Heater, label: "런조아 소개", href: "/about" },
+  { icon: CableCar, label: "런조아 소식", href: "/news" },
+  { icon: Snail, label: "내 정보", href: "/profile" },
+  { icon: FerrisWheel, label: "즐겨찾기", href: "/favorites" },
 ];
 
 // 로그인 했을 때
 export const userMenuItems: MenuItem[] = [
-  { icon: User, label: "내 정보", href: "/profile" },
-  { icon: Star, label: "즐겨찾기", href: "/favorites" },
+  { icon: Snail, label: "내 정보", href: "/profile" },
+  { icon: FerrisWheel, label: "즐겨찾기", href: "/favorites" },
   { icon: Gem, label: "관리자", href: "/admin" },
 ];
 
@@ -54,7 +58,7 @@ export const footerMenuItems: MenuItem[] = [
 export const mobileMenuItems: MenuItem[] = [
   { icon: Home, label: "홈", href: "/" },
   { icon: Newspaper, label: "소식", href: "/news" },
-  { icon: Star, label: "즐겨찾기", href: "/favorites" },
+  { icon: FerrisWheel, label: "즐겨찾기", href: "/favorites" },
   { icon: Component, label: "더보기", href: "#more" },
 ];
 
