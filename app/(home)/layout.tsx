@@ -1,5 +1,6 @@
 import Header from "@/components/header/header";
 import Footer from "@/components/footer/footer";
+import MobileNav from "@/components/nav/mobile-nav";
 
 export default function HomeLayout({
   children,
@@ -11,6 +12,7 @@ export default function HomeLayout({
       <Header />
       <main className="main__container">{children}</main>
       <Footer />
+      <MobileNav />
     </>
   );
 }
