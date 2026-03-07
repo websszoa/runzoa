@@ -181,24 +181,6 @@ export function getMarathonEngagementMessage(
   return MARATHON_ENGAGEMENT_MESSAGES[index](viewCount);
 }
 
-/** 접수 상태에 따른 텍스트 색상 클래스 (Tailwind) */
-export function getRegistrationTextColor(
-  status: string | null | undefined,
-): string {
-  switch (status) {
-    case "접수대기":
-      return "text-amber-600";
-    case "접수중":
-      return "text-red-600";
-    case "접수마감":
-      return "text-gray-600";
-    case "추가접수":
-      return "text-blue-600";
-    default:
-      return "text-gray-900";
-  }
-}
-
 /*
  * 이벤트 상태 계산 (D-day)
  * @returns "D-10" | "D-Day" | "진행중" | "종료" | "정보없음"
@@ -226,47 +208,33 @@ export function getEventStatus(start: string, end: string) {
   return `D-${diff}`;
 }
 
-/** URL을 클립보드에 복사하고 토스트로 결과 알림. 성공 시 onSuccess 호출 */
-export function copyToClipboard(url: string, onSuccess?: () => void): void {
-  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-    toast.error("링크 복사에 실패했습니다.");
-    return;
-  }
-  navigator.clipboard.writeText(url).then(
-    () => {
-      toast.success("링크가 복사되었습니다.");
-      onSuccess?.();
-    },
-    () => toast.error("링크 복사에 실패했습니다."),
-  );
+/** 접수 시작일까지 남은 일수를 반환. 당일이면 0, 날짜 없으면 null */
+export function getDaysUntilRegistration(
+  registrationStartAt: string | null | undefined,
+): number | null {
+  if (!registrationStartAt) return null;
+  const start = new Date(registrationStartAt);
+  start.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.ceil((start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  return diff > 0 ? diff : 0;
 }
 
-/** 마라톤 공유: Web Share API 시도, 미지원/취소 시 링크 복사. 공유 성공 시 onShareSuccess(marathonId) 호출 */
-export function shareMarathonLink(
-  marathon: Marathon,
-  onShareSuccess?: (marathonId: string) => void,
-): void {
-  const url =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/marathon/${marathon.slug}`
-      : "";
-  const title = marathon.name || "마라톤 대회";
-  const text = `${title} - 런조아에서 확인하기`;
-  const reportShare = () => onShareSuccess?.(marathon.id);
-
-  if (typeof navigator !== "undefined" && navigator.share) {
-    navigator
-      .share({ title, text, url })
-      .then(() => {
-        toast.success("공유되었습니다.");
-        reportShare();
-      })
-      .catch((err: { name?: string }) => {
-        if (err?.name !== "AbortError") {
-          copyToClipboard(url, reportShare);
-        }
-      });
-  } else {
-    copyToClipboard(url, reportShare);
+/** 접수 상태에 따른 텍스트 색상 클래스 (Tailwind) */
+export function getRegistrationTextColor(
+  status: string | null | undefined,
+): string {
+  switch (status) {
+    case "접수대기":
+      return "text-amber-600";
+    case "접수중":
+      return "text-red-600";
+    case "접수마감":
+      return "text-gray-600";
+    case "추가접수":
+      return "text-blue-600";
+    default:
+      return "text-gray-900";
   }
 }

@@ -1,7 +1,7 @@
 -- ============================================
 -- 즐겨찾기 테이블 생성
 -- ============================================
-CREATE TABLE IF NOT EXISTS public.favorites (
+CREATE TABLE IF NOT EXISTS public.marathon_favorites (
   user_id    UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   marathon_id UUID NOT NULL REFERENCES public.marathons(id) ON DELETE CASCADE,
   created_at  TIMESTAMPTZ DEFAULT NOW() NOT NULL,
@@ -11,35 +11,35 @@ CREATE TABLE IF NOT EXISTS public.favorites (
 -- ============================================
 -- 즐겨찾기 인덱스
 -- ============================================
-CREATE INDEX IF NOT EXISTS idx_favorites_user_id ON public.favorites(user_id);
-CREATE INDEX IF NOT EXISTS idx_favorites_marathon_id ON public.favorites(marathon_id);
+CREATE INDEX IF NOT EXISTS idx_marathon_favorites_user_id ON public.marathon_favorites(user_id);
+CREATE INDEX IF NOT EXISTS idx_marathon_favorites_marathon_id ON public.marathon_favorites(marathon_id);
 
 -- ============================================
 -- RLS (Row Level Security) 정책
 -- ============================================
-ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.marathon_favorites ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "read own favorites" ON public.favorites;
-DROP POLICY IF EXISTS "insert own favorite" ON public.favorites;
-DROP POLICY IF EXISTS "delete own favorite" ON public.favorites;
+DROP POLICY IF EXISTS "read own favorites" ON public.marathon_favorites;
+DROP POLICY IF EXISTS "insert own favorite" ON public.marathon_favorites;
+DROP POLICY IF EXISTS "delete own favorite" ON public.marathon_favorites;
 
 -- 본인 즐겨찾기만 조회
 CREATE POLICY "read own favorites"
-ON public.favorites
+ON public.marathon_favorites
 FOR SELECT
 TO authenticated
 USING (user_id = (select auth.uid()));
 
 -- 본인 즐겨찾기만 추가
 CREATE POLICY "insert own favorite"
-ON public.favorites
+ON public.marathon_favorites
 FOR INSERT
 TO authenticated
 WITH CHECK (user_id = (select auth.uid()));
 
 -- 본인 즐겨찾기만 삭제
 CREATE POLICY "delete own favorite"
-ON public.favorites
+ON public.marathon_favorites
 FOR DELETE
 TO authenticated
 USING (user_id = (select auth.uid()));
@@ -47,15 +47,15 @@ USING (user_id = (select auth.uid()));
 -- ============================================
 -- 테이블 권한 정리
 -- ============================================
-GRANT SELECT, INSERT, DELETE ON public.favorites TO authenticated;
-REVOKE UPDATE ON public.favorites FROM authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.favorites TO service_role;
+GRANT SELECT, INSERT, DELETE ON public.marathon_favorites TO authenticated;
+REVOKE UPDATE ON public.marathon_favorites FROM authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.marathon_favorites TO service_role;
 
 
 -- ============================================
 -- 트리거: 즐겨찾기 추가 → favorite_count +1
 -- ============================================
-CREATE OR REPLACE FUNCTION public.fn_trg_favorites_insert()
+CREATE OR REPLACE FUNCTION public.fn_trg_marathon_favorites_insert()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -69,16 +69,16 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_favorites_after_insert ON public.favorites;
-CREATE TRIGGER trg_favorites_after_insert
-AFTER INSERT ON public.favorites
-FOR EACH ROW EXECUTE FUNCTION public.fn_trg_favorites_insert();
+DROP TRIGGER IF EXISTS trg_marathon_favorites_after_insert ON public.marathon_favorites;
+CREATE TRIGGER trg_marathon_favorites_after_insert
+AFTER INSERT ON public.marathon_favorites
+FOR EACH ROW EXECUTE FUNCTION public.fn_trg_marathon_favorites_insert();
 
 
 -- ============================================
 -- 트리거: 즐겨찾기 삭제 → favorite_count -1
 -- ============================================
-CREATE OR REPLACE FUNCTION public.fn_trg_favorites_delete()
+CREATE OR REPLACE FUNCTION public.fn_trg_marathon_favorites_delete()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -92,10 +92,10 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_favorites_after_delete ON public.favorites;
-CREATE TRIGGER trg_favorites_after_delete
-AFTER DELETE ON public.favorites
-FOR EACH ROW EXECUTE FUNCTION public.fn_trg_favorites_delete();
+DROP TRIGGER IF EXISTS trg_marathon_favorites_after_delete ON public.marathon_favorites;
+CREATE TRIGGER trg_marathon_favorites_after_delete
+AFTER DELETE ON public.marathon_favorites
+FOR EACH ROW EXECUTE FUNCTION public.fn_trg_marathon_favorites_delete();
 
 
 -- ============================================
@@ -111,18 +111,18 @@ DECLARE
   v_exists boolean;
 BEGIN
   SELECT EXISTS (
-    SELECT 1 FROM public.favorites
+    SELECT 1 FROM public.marathon_favorites
     WHERE user_id = (select auth.uid())
       AND marathon_id = p_marathon_id
   ) INTO v_exists;
 
   IF v_exists THEN
-    DELETE FROM public.favorites
+    DELETE FROM public.marathon_favorites
     WHERE user_id = (select auth.uid())
       AND marathon_id = p_marathon_id;
     RETURN FALSE;
   ELSE
-    INSERT INTO public.favorites (user_id, marathon_id)
+    INSERT INTO public.marathon_favorites (user_id, marathon_id)
     VALUES ((select auth.uid()), p_marathon_id);
     RETURN TRUE;
   END IF;
@@ -143,7 +143,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.favorites
+    SELECT 1 FROM public.marathon_favorites
     WHERE user_id = (select auth.uid())
       AND marathon_id = p_marathon_id
   );

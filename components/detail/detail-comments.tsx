@@ -29,7 +29,7 @@ export default function DetailComments({ marathonId }: { marathonId: string }) {
 
   const fetchComments = useCallback(async () => {
     const { data, error } = await supabase
-      .from("comments")
+      .from("marathon_comments")
       .select("id, marathon_id, user_id, name, content, created_at")
       .eq("marathon_id", marathonId)
       .order("created_at", { ascending: true });
@@ -77,7 +77,7 @@ export default function DetailComments({ marathonId }: { marathonId: string }) {
 
       const name = profile?.full_name?.trim() || "익명";
 
-      const { error } = await supabase.from("comments").insert({
+      const { error } = await supabase.from("marathon_comments").insert({
         marathon_id: marathonId,
         user_id: session.user.id,
         name,

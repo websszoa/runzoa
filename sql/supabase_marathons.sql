@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.marathons (
 
   comment_count INT DEFAULT 0 NOT NULL,              -- 댓글 수
   view_count INT DEFAULT 0 NOT NULL,                 -- 조회 수
+  like_count INT DEFAULT 0 NOT NULL,                 -- 좋아요 수
   favorite_count INT DEFAULT 0 NOT NULL,             -- 즐겨찾기 수
   share_count INT DEFAULT 0 NOT NULL,                -- 공유 수
   alert_entry_count INT DEFAULT 0 NOT NULL,          -- 접수 알람 설정 수

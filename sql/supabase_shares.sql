@@ -20,19 +20,27 @@ CREATE INDEX IF NOT EXISTS idx_marathon_shares_marathon_id ON public.marathon_sh
 ALTER TABLE public.marathon_shares ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "insert own share" ON public.marathon_shares;
+DROP POLICY IF EXISTS "read own shares" ON public.marathon_shares;
 
--- 본인 공유 기록만 추가 (조회는 관리자만, 직접 SELECT 불필요)
+-- 본인 공유 기록만 추가
 CREATE POLICY "insert own share"
 ON public.marathon_shares
 FOR INSERT
 TO authenticated
 WITH CHECK (user_id = (select auth.uid()));
 
+-- 본인 공유 기록만 조회 (버튼 active 상태 유지용)
+CREATE POLICY "read own shares"
+ON public.marathon_shares
+FOR SELECT
+TO authenticated
+USING (user_id = (select auth.uid()));
+
 -- ============================================
 -- 테이블 권한 정리
 -- ============================================
-GRANT INSERT ON public.marathon_shares TO authenticated;
-REVOKE SELECT, UPDATE, DELETE ON public.marathon_shares FROM authenticated;
+GRANT SELECT, INSERT ON public.marathon_shares TO authenticated;
+REVOKE UPDATE, DELETE ON public.marathon_shares FROM authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.marathon_shares TO service_role;
 
 

@@ -133,23 +133,23 @@ export default function RootLayout({
       >
         <SplashScreen />
         <BodyFadeIn>
-        <LoginProvider>
-          <SheetProvider>
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                classNames: {
-                  title: "font-anyvid",
-                  description: "font-anyvid",
-                },
-              }}
-            />
-            <Suspense fallback={null}>
-              <AuthToast />
-            </Suspense>
-            <TooltipProvider>{children}</TooltipProvider>
-          </SheetProvider>
-        </LoginProvider>
+          <LoginProvider>
+            <SheetProvider>
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  classNames: {
+                    title: "font-anyvid",
+                    description: "font-anyvid",
+                  },
+                }}
+              />
+              <Suspense fallback={null}>
+                <AuthToast />
+              </Suspense>
+              <TooltipProvider>{children}</TooltipProvider>
+            </SheetProvider>
+          </LoginProvider>
         </BodyFadeIn>
       </body>
     </html>

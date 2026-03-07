@@ -63,9 +63,9 @@ CREATE TRIGGER trg_marathons_before_update
   BEFORE UPDATE ON public.marathons
   FOR EACH ROW EXECUTE FUNCTION public.fn_trg_set_updated_at();
 
-DROP TRIGGER IF EXISTS trg_comments_before_update ON public.comments;
-CREATE TRIGGER trg_comments_before_update
-  BEFORE UPDATE ON public.comments
+DROP TRIGGER IF EXISTS trg_marathon_comments_before_update ON public.marathon_comments;
+CREATE TRIGGER trg_marathon_comments_before_update
+  BEFORE UPDATE ON public.marathon_comments
   FOR EACH ROW EXECUTE FUNCTION public.fn_trg_set_updated_at();
 
 
@@ -181,7 +181,7 @@ GRANT EXECUTE ON FUNCTION public.increment_view_count(UUID) TO anon, authenticat
 -- ============================================
 -- 8. 마라톤 댓글 수 자동 동기화 (트리거)
 -- ============================================
-CREATE OR REPLACE FUNCTION public.fn_trg_comments_insert()
+CREATE OR REPLACE FUNCTION public.fn_trg_marathon_comments_insert()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -195,12 +195,12 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_comments_after_insert ON public.comments;
-CREATE TRIGGER trg_comments_after_insert
-AFTER INSERT ON public.comments
-FOR EACH ROW EXECUTE FUNCTION public.fn_trg_comments_insert();
+DROP TRIGGER IF EXISTS trg_marathon_comments_after_insert ON public.marathon_comments;
+CREATE TRIGGER trg_marathon_comments_after_insert
+AFTER INSERT ON public.marathon_comments
+FOR EACH ROW EXECUTE FUNCTION public.fn_trg_marathon_comments_insert();
 
-CREATE OR REPLACE FUNCTION public.fn_trg_comments_delete()
+CREATE OR REPLACE FUNCTION public.fn_trg_marathon_comments_delete()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -214,10 +214,10 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_comments_after_delete ON public.comments;
-CREATE TRIGGER trg_comments_after_delete
-AFTER DELETE ON public.comments
-FOR EACH ROW EXECUTE FUNCTION public.fn_trg_comments_delete();
+DROP TRIGGER IF EXISTS trg_marathon_comments_after_delete ON public.marathon_comments;
+CREATE TRIGGER trg_marathon_comments_after_delete
+AFTER DELETE ON public.marathon_comments
+FOR EACH ROW EXECUTE FUNCTION public.fn_trg_marathon_comments_delete();
 
 
 -- ============================================
@@ -236,6 +236,8 @@ FOR EACH ROW EXECUTE FUNCTION public.fn_trg_comments_delete();
 -- 8. 마라톤 상세 페이지 방문수 증가
 --
 -- [별도 파일]
--- 9.  즐겨찾기 (supabase_favorites.sql)
--- 10. 알림설정 (supabase_alerts.sql)
--- 11. 공유 기록 (supabase_shares.sql)
+-- 9.  즐겨찾기 (supabase_favorites.sql) → marathon_favorites
+-- 10. 알림설정 (supabase_alerts.sql)   → marathon_alerts
+-- 11. 댓글 (supabase_comments.sql)     → marathon_comments
+-- 12. 공유 기록 (supabase_shares.sql)  → marathon_shares
+-- 13. 좋아요 (supabase_likes.sql)      → marathon_likes

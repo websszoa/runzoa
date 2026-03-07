@@ -1,11 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
 import { Marathon } from "@/lib/types";
-import { createClient } from "@/lib/supabase/client";
-import { MARATHON_IMAGE_BASE_URL } from "@/lib/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,84 +10,30 @@ import {
   getMarathonEngagementMessage,
   formatRegistrationDistances,
   formatRegistrationPriceRange,
-  shareMarathonLink,
+  getDaysUntilRegistration,
 } from "@/lib/utils";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Bell,
   Building2,
-  Bookmark,
   Calendar,
   ChartNoAxesCombined,
   CircleDollarSign,
   Eye,
-  Heart,
   MapPin,
-  Medal,
-  Share2,
   UsersRound,
 } from "lucide-react";
 
-function MarathonCoverImage({
-  src,
-  name,
-  index,
-}: {
-  src: string | null | undefined;
-  name: string;
-  index: number;
-}) {
-  const [hasError, setHasError] = useState(false);
-  const normalizedSrc = src
-    ? src.startsWith("http") || src.startsWith("/")
-      ? src
-      : `${MARATHON_IMAGE_BASE_URL}/${src.replace(/^\//, "")}`
-    : null;
-
-  return (
-    <div className="relative flex h-[160px] w-[120px] overflow-hidden rounded shrink-0 bg-gray-100">
-      <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-        <Medal className="h-6 w-6" aria-hidden="true" />
-      </div>
-      {normalizedSrc && !hasError && (
-        <Image
-          src={normalizedSrc}
-          alt={name || "대회 이미지"}
-          fill
-          sizes="120px"
-          loading={index === 0 ? "eager" : "lazy"}
-          className="object-cover"
-          onError={() => setHasError(true)}
-        />
-      )}
-    </div>
-  );
-}
+import MarathonImage from "@/components/marathon/marathon-image";
+import MarathonBtnFavorite from "@/components/marathon/marathon-btn-favorite";
+import MarathonBtnShare from "@/components/marathon/marathon-btn-share";
+import MarathonBtnLike from "@/components/marathon/marathon-btn-like";
+import MarathonBtnAlert from "@/components/marathon/marathon-btn-alert";
+import MarathonBtnComments from "@/components/marathon/marathon-btn-comments";
 
 export default function MarathonListCard({
   marathons,
 }: {
   marathons: Marathon[];
 }) {
-  const supabase = createClient();
-
-  const logEngagement = (
-    marathonId: string,
-    actionType: "share" | "favorite" | "heart" | "alert",
-  ) => {
-    supabase
-      .from("marathon_engagement_log")
-      .insert({ marathon_id: marathonId, action_type: actionType });
-  };
-
-  const handleShareSuccess = (marathonId: string) => {
-    logEngagement(marathonId, "share");
-  };
-
   return (
     <div className="marathon__list__card">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -114,7 +56,14 @@ export default function MarathonListCard({
                       <>
                         <Badge variant="red">접수대기</Badge>
                         <Badge className="rounded-full text-xs font-anyvid border border-red-500 bg-white text-red-500">
-                          접수가 2일 남았습니다!!
+                          {(() => {
+                            const days = getDaysUntilRegistration(
+                              marathon.registration_start_at,
+                            );
+                            if (days === null) return "접수 예정";
+                            if (days === 0) return "오늘 접수 시작!";
+                            return `접수까지 ${days}일 남았습니다`;
+                          })()}
                         </Badge>
                       </>
                     )}
@@ -137,10 +86,11 @@ export default function MarathonListCard({
               </CardHeader>
               <CardContent className="flex h-full flex-col gap-4 px-4 md:px-6">
                 <div className="flex gap-3">
-                  <MarathonCoverImage
+                  <MarathonImage
                     src={marathon.images?.cover?.[0]}
                     name={marathon.name || ""}
                     index={index}
+                    slug={marathon.slug}
                   />
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -189,73 +139,24 @@ export default function MarathonListCard({
                   </div>
                 </div>
                 <div className="flex w-full flex-wrap items-center gap-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="공유하기"
-                        onClick={() =>
-                          shareMarathonLink(marathon, handleShareSuccess)
-                        }
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">공유하기</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="즐겨찾기"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">즐겨찾기</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="좋아요"
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">좋아요</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="h-9 w-9 shrink-0 border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                        aria-label="알림설정"
-                      >
-                        <Bell className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-nanumNeo">알림 설정</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <MarathonBtnShare
+                    marathonId={marathon.id}
+                    slug={marathon.slug}
+                  />
+                  <MarathonBtnFavorite marathonId={marathon.id} />
+                  <MarathonBtnLike marathonId={marathon.id} />
+                  <MarathonBtnAlert
+                    marathonId={marathon.id}
+                    slug={marathon.slug}
+                    name={marathon.name || ""}
+                    description={marathon.description || ""}
+                    eventStartAt={marathon.event_start_at}
+                    registrationStartAt={marathon.registration_start_at}
+                    registrationPrice={marathon.registration_price}
+                    location={marathon.location}
+                  />
+                  <MarathonBtnComments slug={marathon.slug} />
+
                   <Button
                     variant="outline"
                     className="group min-w-0 flex-1 text-muted-foreground hover:bg-red-50 hover:text-red-600 hover:border-red-200"
